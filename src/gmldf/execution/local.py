@@ -64,6 +64,7 @@ def run_local(
     if workflow.kind != "data":
         raise FrameworkError("CAPABILITY_UNSUPPORTED", path="kind")
     providers = _providers(workflow)
+    selected = (*providers.readers.values(), *providers.writers.values(), providers.processing)
     root = (config_path.parent / output_dir).absolute()
     digest = (
         "sha256:"
@@ -91,22 +92,12 @@ def run_local(
         identity=identity,
         artifact_root=folder.as_uri(),
         allowed_capabilities=[
-            c.id
-            for p in (
-                *providers.readers.values(),
-                *providers.writers.values(),
-                providers.processing,
-            )
-            for c in p.capabilities
+            capability.id for provider in selected for capability in provider.capabilities
         ],
     )
     providers.validate(workflow, context)
     environment = dict(identity.environment)
-    for provider in (
-        *providers.readers.values(),
-        *providers.writers.values(),
-        providers.processing,
-    ):
+    for provider in selected:
         for capability in provider.capabilities:
             environment.update({package: version(package) for package in capability.dependencies})
     identity = identity.model_copy(update={"environment": environment})
