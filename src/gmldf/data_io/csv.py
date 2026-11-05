@@ -117,9 +117,9 @@ def _cast(series, dtype, options):
 
 
 class PandasCSVReader:
-    capability = CSV_READ
+    capabilities = (CSV_READ,)
 
-    def read(self, source: SourceSpec, context: RunContext) -> DatasetRef:
+    def _prepare(self, source: SourceSpec, context: RunContext) -> tuple[CSVOptions, Path]:
         path_prefix = f"sources.{source.id}"
         request = CapabilityRequest(
             operation="read",
@@ -128,7 +128,7 @@ class PandasCSVReader:
             connector=source.connector,
             format=source.format or "csv",
         )
-        CapabilityRegistry([self.capability]).require(
+        CapabilityRegistry(self.capabilities).require(
             request, allowed=context.allowed_capabilities, path=f"{path_prefix}.connector"
         )
         try:
@@ -146,6 +146,14 @@ class PandasCSVReader:
         if set(options.date_formats) != dates:
             raise ConfigError(f"{path_prefix}.options.date_formats", "date_formats_required")
         path = _local_path(source.location, path_prefix)
+        return options, path
+
+    def validate(self, source: SourceSpec, context: RunContext) -> None:
+        self._prepare(source, context)
+
+    def read(self, source: SourceSpec, context: RunContext) -> DatasetRef:
+        options, path = self._prepare(source, context)
+        path_prefix = f"sources.{source.id}"
         import pandas as pd
 
         try:
@@ -261,11 +269,11 @@ class PandasCSVWriter:
         for suffix, mode in (("new", "error_if_exists"), ("overwrite", "overwrite"))
     )
 
-    def write(self, dataset: DatasetRef, sink: OutputSpec, context: RunContext) -> WriteReceipt:
+    def _prepare(self, sink: OutputSpec, context: RunContext) -> tuple[CSVWriteOptions, Path]:
         prefix = f"outputs.{sink.id}"
         request = CapabilityRequest(
             operation="write",
-            engine=dataset.engine,
+            engine="pandas",
             profile="local",
             connector=sink.connector,
             format=sink.format or "csv",
@@ -282,6 +290,16 @@ class PandasCSVWriter:
             raise ConfigError(f"{prefix}.options{suffix}", "invalid_csv_options") from cause
         _validate_framing(options.encoding, options.delimiter, prefix)
         path = _local_path(sink.location, prefix)
+        return options, path
+
+    def validate(self, sink: OutputSpec, context: RunContext) -> None:
+        self._prepare(sink, context)
+
+    def write(self, dataset: DatasetRef, sink: OutputSpec, context: RunContext) -> WriteReceipt:
+        if dataset.engine != "pandas":
+            raise FrameworkError("CAPABILITY_UNSUPPORTED", path="dataset.engine")
+        options, path = self._prepare(sink, context)
+        prefix = f"outputs.{sink.id}"
         dates = {column.name for column in dataset.columns if column.dtype in {"date", "timestamp"}}
         if set(options.date_formats) != dates:
             raise ConfigError(f"{prefix}.options.date_formats", "date_formats_required")
