@@ -25,11 +25,15 @@ def _providers(config) -> ProviderSet:
     from gmldf.data_io.csv import PandasCSVReader, PandasCSVWriter
     from gmldf.processing.pandas import PandasEngine
 
-    return ProviderSet(
-        readers={"csv": PandasCSVReader()},
-        writers={"csv": PandasCSVWriter()},
-        processing=PandasEngine(),
-    )
+    readers, writers = {"csv": PandasCSVReader()}, {"csv": PandasCSVWriter()}
+    if any(spec.connector == "parquet" for spec in (*config.sources, *config.outputs)):
+        from gmldf.data_io.parquet import PandasParquetReader, PandasParquetWriter
+
+        if any(source.connector == "parquet" for source in config.sources):
+            readers["parquet"] = PandasParquetReader()
+        if any(output.connector == "parquet" for output in config.outputs):
+            writers["parquet"] = PandasParquetWriter()
+    return ProviderSet(readers=readers, writers=writers, processing=PandasEngine())
 
 
 def run_local(

@@ -165,3 +165,21 @@ def test_documented_dev_extra_supports_offline_wheel_build(installed_python, tmp
         text=True,
     )
     assert built.returncode == 0, built.stderr
+
+
+def test_missing_parquet_extra_rejects_before_source_or_output_access(installed_python, tmp_path):
+    path = example(tmp_path)
+    config = yaml.safe_load(path.read_text())
+    config["sources"][0].update(connector="parquet", location="missing.parquet", options={})
+    path.write_text(yaml.safe_dump(config))
+    response = invoke(installed_python, path)
+    assert response.returncode == 2
+    error = json.loads(response.stderr.splitlines()[-1])["error"]
+    assert error["code"] == "CAPABILITY_UNSUPPORTED"
+    assert error["dependency"] == {
+        "package": "pyarrow",
+        "expected_version": "26.0.1",
+        "install_extra": "parquet",
+        "reason": "missing",
+    }
+    assert not (path.parent / "runs").exists()
