@@ -239,7 +239,7 @@ A missing entire named capability blocks first-release completion; an unsupporte
 
 ## Review Boundary
 
-The user authorized autonomous incremental implementation, TDD, review/fix and simplification. T001–T010 and T087 are complete; the backlog records verified scope.
+The user authorized autonomous incremental implementation, TDD, review/fix and simplification. T001–T011 and T087 are complete; the backlog records verified scope.
 Further implementation follows the remaining dependencies. Publishing, provisioning, external job management, and deployment are not part of these local implementation tasks.
 
 ## Execution status — autonomous completion
@@ -247,9 +247,9 @@ Further implementation follows the remaining dependencies. Publishing, provision
 - Scope: complete T005–T087 in dependency order (T080 optional), preserving T001–T004.
 - Baseline: clean `codex/library-core` at 16553d6; no applicable AGENTS.md found in repository or parent paths. Existing suite: 86 tests.
 - Checks: `.venv/bin/python -m pytest`, Ruff check/format, `build --no-isolation`, `git diff --check`. No type checker configured.
-- Current slice: T011 local execution. T001–T010 and T087 completed with acceptance evidence.
+- Current slice: T012 clean-install data recipe. T001–T011 and T087 completed with acceptance evidence.
 - Workflow: focused RED/GREEN → five-axis review/mutation check → fix → simplify only when useful → recheck → atomic local commit. No push, merge, deploy, or provisioning.
-- Pending: T011 onward as ordered above. No later capability is claimed implemented.
+- Pending: T012 onward as ordered above. No later capability is claimed implemented.
 - External evidence: real Kubernetes/AWS/Databricks/Snowflake/database/cloud-service checks need existing authorized environments; continue independent local work. Optional T080 needs user data and is not required for release.
 - T005a: 6 error-contract tests pass (92 total); RED confirmed missing module, plus unhashable-code regression. Message-guard mutation caught. Ruff/build pass. Five-axis review: no actionable findings; no simplification justified. Mutation restored and focused suite rechecked.
 - Findings: malformed code list initially escaped as TypeError; fixed with boundary type check. Later task evidence remains pending.
@@ -300,3 +300,5 @@ Further implementation follows the remaining dependencies. Publishing, provision
 - T010 complete:20 workflow/299 total tests, Ruff/format/build pass. Final diff and connected contracts reviewed after receipt fixes; no unresolved findings.11 required tasks complete,75 required remain plus optional T080. Next T011→T012→T013; no remote compatibility claimed.
 
 - T011 implementation slice:16 real CLI/local cases/315 total pass, Ruff/format/build pass. Missingexecutionmodule andCLIcommand reproduced RED. Review regressions fixed malformedURI rejection and relativefileURI cwd dependency; numericUUID attempt IDs, metadata collision guards and actual optionaldependency identity verified. Reservedmetadata-guard mutation caught2 failures; restored/rechecked. Independent final review clean. Run IDs scoped to output-dir/run-id, every existing reservation rejects; actual cancellation remains T031 (130 mapping verified only). Docs/simplification checkpoint next.
+
+- T011 completed:16 CLI/local contracts/315 total tests and required checks pass. Separate provider-list simplification rechecked33 affected cases and review clean.12 required tasks complete,74 required remain plus optional T080. Next T012 supplies clean-install recipe evidence, then T013 Parquet.

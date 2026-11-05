@@ -446,7 +446,7 @@ python3 -m pytest tests/contract/workflow/test_data_run.py -q
 
 <a id="t011"></a>
 
-### [ ] T011: Expose local workflow execution
+### [x] T011: Expose local workflow execution
 
 **Description:** Deliver this execution capability through the provider contracts, keeping previously completed paths working.
 
@@ -454,9 +454,9 @@ python3 -m pytest tests/contract/workflow/test_data_run.py -q
 
 **Acceptance criteria:**
 
-- [ ] run accepts config/profile/run-id/output-dir and emits the same result as the library, with progress on stderr.
-- [ ] Exit codes distinguish success, rejection, failure, and confirmed cancellation.
-- [ ] Paths resolve relative to the config; completed run-id reuse or config mismatch fails without output mutation.
+- [x] run accepts config/profile/run-id/output-dir and emits the same result as the library, with progress on stderr.
+- [x] Exit codes distinguish success, rejection, failure, and confirmed cancellation.
+- [x] Paths resolve relative to the config; completed run-id reuse or config mismatch fails without output mutation.
 
 **Verification:**
 
@@ -464,7 +464,7 @@ python3 -m pytest tests/contract/workflow/test_data_run.py -q
 python3 -m pytest tests/contract/execution/test_local_cli.py -q
 ```
 
-- [ ] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
+- [x] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
 
 **Dependencies:** T010
 
@@ -475,6 +475,8 @@ python3 -m pytest tests/contract/execution/test_local_cli.py -q
 - `tests/contract/execution/test_local_cli.py`
 
 **Estimated scope:** Medium (3 files).
+
+**Evidence:**16 local CLI contract cases,315 full-suite tests, Ruff/format/build pass. Review fixes and reservedmetadata mutation verified; separate provider-enumeration simplification rechecked with33 affected tests. No unresolved findings.130 mapping verified; actual worker cancellation remains T031. Run-ID namespace is output-dir/run-id.
 
 ### Checkpoint C04: After T009, T010, T011
 
