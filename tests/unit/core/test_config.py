@@ -83,20 +83,28 @@ def test_kind_specific_config_is_required(config, kind, required):
     assert error.value.path == required
 
 
-@pytest.mark.parametrize("task", ["classification", "regression", "forecasting", "clustering"])
-def test_training_requires_explicit_user_intent(config, task):
+@pytest.mark.parametrize(
+    "task,metric",
+    [
+        ("classification", "accuracy"),
+        ("regression", "mae"),
+        ("forecasting", "mae"),
+        ("clustering", "silhouette"),
+    ],
+)
+def test_training_requires_explicit_user_intent(config, task, metric):
     config["kind"] = "train"
     config["ml"] = {
         "task": task,
         "algorithms": [{"name": "user-selected-algorithm"}],
-        "evaluation": {"metric": "user-selected-metric"},
+        "evaluation": {"metric": metric},
         "tuning": {"max_trials": 8, "timeout_seconds": 300},
     }
     ml = validate_config(config).ml
     assert ml.task == task
     assert [algorithm.name for algorithm in ml.algorithms] == ["user-selected-algorithm"]
     assert ml.refit_on_all_data is False
-    assert ml.input_transfer is None
+    assert ml.input_transfer.enabled is False
     assert ml.algorithms[0].search_space is None
 
 

@@ -205,10 +205,10 @@ class TuningSpec(Spec):
 
 class TransferSpec(Spec):
     enabled: bool = False
-    source_engine: Engine
-    target_engine: Engine
-    max_rows: Annotated[int, Field(gt=0)]
-    max_bytes: Annotated[int, Field(gt=0)]
+    source_engine: Engine | None = None
+    target_engine: Engine | None = None
+    max_rows: Annotated[int, Field(gt=0)] | None = None
+    max_bytes: Annotated[int, Field(gt=0)] | None = None
 
 
 class MLSpec(Spec):
@@ -224,7 +224,7 @@ class MLSpec(Spec):
     horizon: Annotated[int, Field(gt=0)] | None = None
     split: dict[str, JsonValue] = Field(default_factory=dict)
     refit_on_all_data: bool = False
-    input_transfer: TransferSpec | None = None
+    input_transfer: TransferSpec = Field(default_factory=TransferSpec)
 
 
 class ModelSpec(Spec):
@@ -280,6 +280,52 @@ def _validate_references(workflow: WorkflowSpec) -> None:
                 raise ConfigError(f"{collection}.{index}.connection", "unknown_connection")
 
 
+METRIC_DIRECTIONS = {
+    "accuracy": True,
+    "f1": True,
+    "precision": True,
+    "recall": True,
+    "roc_auc": True,
+    "log_loss": False,
+    "mae": False,
+    "mse": False,
+    "rmse": False,
+    "r2": True,
+    "mape": False,
+    "smape": False,
+    "silhouette": True,
+    "calinski_harabasz": True,
+    "davies_bouldin": False,
+    "adjusted_rand_score": True,
+}
+TASK_METRICS = {
+    "classification": {"accuracy", "f1", "precision", "recall", "roc_auc", "log_loss"},
+    "regression": {"mae", "mse", "rmse", "r2", "mape"},
+    "forecasting": {"mae", "mse", "rmse", "mape", "smape"},
+    "clustering": {"silhouette", "calinski_harabasz", "davies_bouldin", "adjusted_rand_score"},
+}
+
+
+def _validate_ml_intent(workflow: WorkflowSpec) -> None:
+    ml = workflow.ml
+    if ml is None:
+        return
+    names = set()
+    for index, algorithm in enumerate(ml.algorithms):
+        if algorithm.name in names:
+            raise ConfigError(f"ml.algorithms.{index}.name", "duplicate_algorithm")
+        names.add(algorithm.name)
+    if ml.evaluation.metric not in TASK_METRICS[ml.task]:
+        raise ConfigError("ml.evaluation.metric", "task_metric_mismatch")
+    direction = ml.evaluation.greater_is_better
+    if direction is not None and direction != METRIC_DIRECTIONS[ml.evaluation.metric]:
+        raise ConfigError("ml.evaluation.greater_is_better", "metric_direction_mismatch")
+    if ml.input_transfer.enabled:
+        for field in ("source_engine", "target_engine", "max_rows", "max_bytes"):
+            if getattr(ml.input_transfer, field) is None:
+                raise ConfigError(f"ml.input_transfer.{field}", "required_for_transfer")
+
+
 def validate_config(config: Mapping[str, object]) -> WorkflowSpec:
     """Validate config structure offline, without loading a data/ML provider."""
     if not isinstance(config, Mapping):
@@ -300,4 +346,5 @@ def validate_config(config: Mapping[str, object]) -> WorkflowSpec:
         if workflow.kind != kind and getattr(workflow, field) is not None:
             raise ConfigError(field, "not_allowed_for_kind")
     _validate_references(workflow)
+    _validate_ml_intent(workflow)
     return workflow

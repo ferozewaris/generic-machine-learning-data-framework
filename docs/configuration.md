@@ -1,6 +1,6 @@
 # Configuration schema version 1
 
-Implemented now: offline structure, bounded safe YAML, and reference validation through Python or CLI. Data reads, processing, model training, artifact persistence, and backend capability checks are subsequent tasks. A successful validation report has `capabilities_checked: false`.
+Implemented now: offline structure, bounded safe YAML, references and explicit ML intent validation through Python or CLI. Data reads, processing, model training, and artifact persistence are subsequent tasks. A separate programmatic preflight checks declared capabilities and policy; validation does not invoke it. A successful validation report has `capabilities_checked: false`.
 
 ```sh
 .venv/bin/python -m gmldf validate --config examples/validation/workflow.yaml
@@ -63,9 +63,9 @@ ml:
 
 All four tasks are representable: classification, regression, forecasting, clustering. Task, algorithm list, metric, trial cap, and timeout are explicit. No installed algorithm or baseline is automatically added. An omitted algorithm `search_space` is retained as unspecified for the future versioned-default resolver, not expanded during structural validation.
 
-Optional task fields are `target`, `features`, `time_column`, `group_columns`, `frequency`, positive `horizon`, and `split`. Required task-specific data/algorithm/metric compatibility belongs to later task/provider preflight; arbitrary nonempty algorithm and metric ids are not currently claimed supported.
+Optional task fields are `target`, `features`, `time_column`, `group_columns`, `frequency`, positive `horizon`, and `split`. Task-specific data and algorithm compatibility belongs to provider preflight. Task-valid metric ids and any explicit direction override are checked offline; duplicate candidate ids fail at the duplicate name field. An arbitrary nonempty algorithm id is representable but must match an exact declared provider before execution.
 
-`refit_on_all_data` defaults to false. Omitted `input_transfer` is disabled; the current explicit transfer object contains `enabled`, `source_engine`, `target_engine`, positive `max_rows`, and positive `max_bytes`. No transfer or refit is performed by validation.
+`refit_on_all_data` defaults to false. Omitted `input_transfer` is disabled; the current explicit transfer object contains `enabled`, `source_engine`, `target_engine`, positive `max_rows`, and positive `max_bytes` when enabled. A disabled transfer object needs only `enabled: false`; an omitted object resolves to that disabled state. No transfer or refit is performed by validation.
 
 ## Input and error limits
 
@@ -77,3 +77,12 @@ Optional task fields are `target`, `features`, `time_column`, `group_columns`, `
 - Exit 0: valid offline config; exit 2: invalid/unreadable config; exit 1: report could not be written. Structured errors go to stderr without rejected values or tracebacks.
 
 See the [implementation decisions](decisions/library-contract.md) and [compatibility evidence](compatibility.md). These limits are defensive input bounds, not dataset-size or model-training limits.
+
+## Metric declarations
+
+- Classification: `accuracy`, `f1`, `precision`, `recall`, `roc_auc` maximize; `log_loss` minimizes.
+- Regression: `mae`, `mse`, `rmse`, `mape` minimize; `r2` maximizes.
+- Forecasting: `mae`, `mse`, `rmse`, `mape`, `smape` minimize.
+- Clustering: `silhouette`, `calinski_harabasz`, `adjusted_rand_score` maximize; `davies_bouldin` minimizes.
+
+These declarations validate intent; task providers must additionally validate labels/probabilities, averaging, zero-denominator behavior and assessment protocols before calculating a metric. Metric names do not establish an implemented model or evaluation protocol. An omitted `greater_is_better` remains unspecified in config; execution uses the declared metric direction. No metric is selected on the user's behalf.

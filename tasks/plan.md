@@ -266,3 +266,7 @@ Further implementation follows the remaining dependencies. Publishing, provision
 - T006b dependency-diagnostic slice: optional validated package/version/extra/reason metadata; missing API reproduced RED,7 error tests/149 total pass. Five-axis self-review: no actionable findings; no simplification justified. Ruff/format/build pass. T006c preflight is next (T006 not yet complete).
 
 - T006c complete:17 preflight cases/166 total pass; planned/verified/unsupported, exact version remedies, policy-before-access, formats, transfers and prediction provenance covered. Nine failures detected by status-guard mutation; restored and full suite rechecked. Independent re-review: no actionable findings. Ruff/format/build pass; no further simplification justified.
+
+- T087 split before implementation: a) explicit fields/defaults/metric semantics (config, new contract tests, updated prior intent fixture, docs, status); b) exact provider rejection paths and only-listed candidate registry proofs; c) acceptance evidence. T087a20 tests pass; stricter semantics update former generic-metric fixture to explicit task-valid choices. Review passed with no actionable findings; no simplification justified.
+
+- T087a verified:186 tests, Ruff/format/build pass; duplicate-guard mutation caught16 failures, restored and20 focused tests pass. T087 remains incomplete until exact provider rejection/registry criteria are verified.
