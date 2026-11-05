@@ -262,3 +262,15 @@ def test_date_conversion_preserves_explicit_local_calendar_date(tmp_path, contex
     assert result.handle["day"].iloc[0] == pd.Timestamp("2026-01-02")
     assert pd.isna(result.handle["day"].iloc[1])
     pd.testing.assert_frame_equal(frame, original)
+
+
+def test_nonnullable_column_schema_survives_parquet_roundtrip(tmp_path, context):
+    path = tmp_path / "out.parquet"
+    ref = dataset(pd.DataFrame({"x": [1]}), {"x": "int64"})
+    ref = ref.model_copy(
+        update={"columns": [ref.columns[0].model_copy(update={"nullable": False})]}
+    )
+    PandasParquetWriter().write(ref, sink(path), context)
+    assert pq.read_schema(path).field("x").nullable is False
+    restored = PandasParquetReader().read(source(path, {"x": "int64"}), context)
+    assert restored.columns == ref.columns

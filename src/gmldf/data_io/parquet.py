@@ -133,7 +133,14 @@ class PandasParquetReader:
             id=source.id,
             engine="pandas",
             materialization="memory",
-            columns=[ColumnSpec(name=name, dtype=source.columns[name]) for name in frame.columns],
+            columns=[
+                ColumnSpec(
+                    name=name,
+                    dtype=source.columns[name],
+                    nullable=table.schema.field(name).nullable,
+                )
+                for name in frame.columns
+            ],
             row_count=len(frame),
             source_uri=path.resolve().as_uri(),
             source_version=None,
@@ -223,10 +230,12 @@ class PandasParquetWriter:
             raise FrameworkError("DATA_INVALID", path=f"outputs.{sink.id}.columns")
         try:
             arrays = [_array(frame[column.name], column.dtype) for column in dataset.columns]
+            fields = []
             for column, array in zip(dataset.columns, arrays, strict=True):
                 if not column.nullable and array.null_count:
                     raise ValueError("nullability_violation")
-            table = pa.Table.from_arrays(arrays, names=list(frame.columns))
+                fields.append(pa.field(column.name, array.type, nullable=column.nullable))
+            table = pa.Table.from_arrays(arrays, schema=pa.schema(fields))
         except Exception as cause:
             raise FrameworkError("DATA_INVALID", path=f"outputs.{sink.id}.columns") from cause
         return publish(
