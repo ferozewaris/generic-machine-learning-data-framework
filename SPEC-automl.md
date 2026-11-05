@@ -10,6 +10,8 @@ For the user's explicit ML task, algorithm list, and metric, return the best suc
 
 The [confirmed intent](docs/intent/generic-data-ml-library.md) requires classification, regression, forecasting, and clustering in the first release. None is a follow-up release.
 
+Implemented subset: T014 temporal data validation and T015 explicit local naive candidate evaluation; see docs/forecasting-fixture.md. Full bounded search, worker limits, assessment/refit, workflow integration and other requested algorithms remain pending.
+
 ## Tech Stack
 
 Optional scikit-learn, XGBoost, PySpark ML, statsmodels ARIMA, and Prophet integrations.

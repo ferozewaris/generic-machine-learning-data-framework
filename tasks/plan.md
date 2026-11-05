@@ -239,7 +239,7 @@ A missing entire named capability blocks first-release completion; an unsupporte
 
 ## Review Boundary
 
-The user authorized autonomous incremental implementation, TDD, review/fix and simplification. T001–T014 and T087 are complete; the backlog records verified scope.
+The user authorized autonomous incremental implementation, TDD, review/fix and simplification. T001–T015 and T087 are complete; the backlog records verified scope.
 Further implementation follows the remaining dependencies. Publishing, provisioning, external job management, and deployment are not part of these local implementation tasks.
 
 ## Execution status — autonomous completion
@@ -247,9 +247,9 @@ Further implementation follows the remaining dependencies. Publishing, provision
 - Scope: complete T005–T087 in dependency order (T080 optional), preserving T001–T004.
 - Baseline: clean `codex/library-core` at 16553d6; no applicable AGENTS.md found in repository or parent paths. Existing suite: 86 tests.
 - Checks: `.venv/bin/python -m pytest`, Ruff check/format, `build --no-isolation`, `git diff --check`. No type checker configured.
-- Current slice: T015 explicit causal baseline. T001–T014 and T087 completed with acceptance evidence.
+- Current slice: T016 ARIMA candidate. T001–T015 and T087 completed with acceptance evidence.
 - Workflow: focused RED/GREEN → five-axis review/mutation check → fix → simplify only when useful → recheck → atomic local commit. No push, merge, deploy, or provisioning.
-- Pending: T015 onward as ordered above. No later capability is claimed implemented.
+- Pending: T016 onward as ordered above. No later capability is claimed implemented.
 - External evidence: real Kubernetes/AWS/Databricks/Snowflake/database/cloud-service checks need existing authorized environments; continue independent local work. Optional T080 needs user data and is not required for release.
 - T005a: 6 error-contract tests pass (92 total); RED confirmed missing module, plus unhashable-code regression. Message-guard mutation caught. Ruff/build pass. Five-axis review: no actionable findings; no simplification justified. Mutation restored and focused suite rechecked.
 - Findings: malformed code list initially escaped as TypeError; fixed with boundary type check. Later task evidence remains pending.
@@ -328,3 +328,5 @@ Further implementation follows the remaining dependencies. Publishing, provision
 - T015 nativecandidate slice:17 modelcases/406 full tests pass; Ruff/format/build pass. MissingmoduleRED and actualns/us JSONroundtripdtypeRED fixed via canonicalmicrosecondcutoff; strictnumeric/horizon/frequency/overflow and precision checks verified. Cutoffguardmutation caught1 failure; restored/rechecked. Independent review clean; no simplification justified. Candidateonly, no workerlimits/artifactpublication claimed; baselineevaluation/accounting linkage next.
 
 - T015 evaluation slice:15 baselinecontracts/421 full tests pass, Ruff/format/build pass. MissingmoduleRED preceded only-listed/capability/MAE validation; returnedpredictions scoring regression reproduced/fixed. Core fit/seed/split/duration/source metadata verified; heldout/test target changes cannot alter state/validation improperly. Training-on-validationmutation caught5 failures; restored/rechecked. Independent review clean; no simplification justified. Primitiveonly; boundedsearch/deadline/fullassessment/persistence remain later.
+
+- T015 complete:421 full tests and all configured checks pass, finalreviewclean.16 required tasks complete,70 required remain plus optional T080. Next T016 ARIMA candidate, then T086 versioned domains. CLItrain remainsunsupported untilT020; externalchecksremainpending.

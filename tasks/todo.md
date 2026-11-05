@@ -603,7 +603,7 @@ python3 -m pytest tests/unit/automl/test_forecast_data.py -q
 
 <a id="t015"></a>
 
-### [ ] T015: Evaluate a causal baseline forecast
+### [x] T015: Evaluate a causal baseline forecast
 
 **Description:** Deliver this automl capability through the provider contracts, keeping previously completed paths working.
 
@@ -611,9 +611,9 @@ python3 -m pytest tests/unit/automl/test_forecast_data.py -q
 
 **Acceptance criteria:**
 
-- [ ] The explicitly listed naive candidate uses configured temporal cutoffs and sees training targets only; no baseline is inserted when not listed.
-- [ ] MAE is recomputable and exactly horizon predictions have ordered expected timestamps.
-- [ ] Baseline results use core result contracts and include split identity, metric direction, seed, and fit accounting.
+- [x] The explicitly listed naive candidate uses configured temporal cutoffs and sees training targets only; no baseline is inserted when not listed.
+- [x] MAE is recomputable and exactly horizon predictions have ordered expected timestamps.
+- [x] Baseline results use core result contracts and include split identity, metric direction, seed, and fit accounting.
 
 **Verification:**
 
@@ -621,7 +621,7 @@ python3 -m pytest tests/unit/automl/test_forecast_data.py -q
 python3 -m pytest tests/contract/automl/test_baseline.py -q
 ```
 
-- [ ] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
+- [x] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
 
 **Dependencies:** T014, T087
 
@@ -632,6 +632,8 @@ python3 -m pytest tests/contract/automl/test_baseline.py -q
 - `tests/contract/automl/test_baseline.py`
 
 **Estimated scope:** Medium (3 files).
+
+**Evidence:**17 native naive-state tests and15 baselineevaluation contracts/421 full tests, Ruff/format/build pass. Onlylisted/policy/cutoff/MAE/seed/fit/split evidence and heldouttarget independence verified. Prediction-score and JSONprecision regressions fixed; fit-leakage mutation detected5 failures. Independentreviewclean. No boundedsearch, workerlimits, fullTrainingResult or durableartifact claim (later tasks).
 
 <a id="t016"></a>
 
