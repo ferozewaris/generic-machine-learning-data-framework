@@ -128,10 +128,7 @@ class TrainingResult(Manifest):
             raise ValueError("assessment_model_mismatch")
         if (self.refit_model is None) != (self.refit_fit is None):
             raise ValueError("refit_provenance_required")
-        if self.refit_model is not None and (
-            self.refit_model.uri == self.evaluated_model.uri
-            or self.refit_model == self.evaluated_model
-        ):
+        if self.refit_model is not None and self.refit_model.uri == self.evaluated_model.uri:
             raise ValueError("distinct_refit_identity_required")
         expected = self.refit_model if self.refit_model is not None else self.evaluated_model
         if self.model != expected:
