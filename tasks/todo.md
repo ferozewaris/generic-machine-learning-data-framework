@@ -265,7 +265,7 @@ python3 -m pytest tests/unit/core/test_preflight.py tests/unit/core/test_secrets
 
 <a id="t087"></a>
 
-### [ ] T087: Require explicit ML intent in config
+### [x] T087: Require explicit ML intent in config
 
 **Description:** Make the confirmed explicit engine/task/algorithms/metric rules and safe refit/transfer defaults observable before model execution.
 
@@ -273,9 +273,9 @@ python3 -m pytest tests/unit/core/test_preflight.py tests/unit/core/test_secrets
 
 **Acceptance criteria:**
 
-- [ ] Missing engine/task/metric, empty/duplicate candidate lists, and invalid candidate/task/metric declarations produce exact field-path errors.
-- [ ] Unspecified refit and cross-engine transfer flags are false; enabled transfers require supported source/target and positive row/byte limits.
-- [ ] Registry tests prove no task/engine inference, installed-algorithm scan, unlisted-baseline insertion, or silent algorithm-variant substitution.
+- [x] Missing engine/task/metric, empty/duplicate candidate lists, and invalid candidate/task/metric declarations produce exact field-path errors.
+- [x] Unspecified refit and cross-engine transfer flags are false; enabled transfers require supported source/target and positive row/byte limits.
+- [x] Registry tests prove no task/engine inference, installed-algorithm scan, unlisted-baseline insertion, or silent algorithm-variant substitution.
 
 **Verification:**
 
@@ -283,7 +283,7 @@ python3 -m pytest tests/unit/core/test_preflight.py tests/unit/core/test_secrets
 python3 -m pytest tests/contract/core/test_explicit_ml_config.py -q
 ```
 
-- [ ] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
+- [x] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
 
 **Dependencies:** T004, T006
 
@@ -294,6 +294,8 @@ python3 -m pytest tests/contract/core/test_explicit_ml_config.py -q
 - `docs/configuration.md`
 
 **Estimated scope:** Medium (3 files).
+
+**Evidence (2026-11-05):** T087a strict duplicate/task-metric/direction checks and disabled transfer object; T087b exact provider rejection paths and registry proofs. New failures reproduced RED before fixes;26 explicit-intent tests/192 total pass. Invalid candidate/task/engine combinations fail at candidate names; enabled transfers require bounds, matching processing source and an exact supported route. Only requested candidates are looked up; unlisted baseline dependencies remain untouched. Independent review has no actionable findings; mutation checks caught duplicate guard and path regressions. Ruff/format/build pass; no further simplification justified. No model/provider execution claimed.
 
 <a id="t007"></a>
 

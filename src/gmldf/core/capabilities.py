@@ -60,10 +60,12 @@ class CapabilityRegistry:
             self._declarations[declaration.key()] = declaration
             ids.add(declaration.id)
 
-    def require(self, request: CapabilityRequest, *, allowed: Collection[str]) -> Capability:
+    def require(
+        self, request: CapabilityRequest, *, allowed: Collection[str], path: str = "capabilities"
+    ) -> Capability:
         declaration = self._declarations.get(request.key())
         if declaration is None or declaration.status != "verified":
-            raise FrameworkError("CAPABILITY_UNSUPPORTED", path="capabilities")
+            raise FrameworkError("CAPABILITY_UNSUPPORTED", path=path)
         if declaration.id not in allowed:
             raise FrameworkError("POLICY_DENIED", path="allowed_capabilities")
         for package, expected in declaration.dependencies.items():
@@ -97,21 +99,22 @@ def preflight(
             raise ConfigError("ml.input_transfer.source_engine", "processing_engine_mismatch")
         training_engine = transfer.target_engine
     shared = {"engine": workflow.engine, "profile": workflow.execution.profile}
-    requests = [
-        CapabilityRequest(
+    requests = []
+    for index, source in enumerate(workflow.sources):
+        request = CapabilityRequest(
             **shared,
             operation="read",
             connector=source.connector,
             format=source.format
             or (source.connector if source.connector in {"csv", "parquet", "delta"} else None),
         )
-        for source in workflow.sources
-    ]
-    requests.extend(
-        CapabilityRequest(**shared, operation=step.operation) for step in workflow.steps
-    )
-    requests.extend(
-        CapabilityRequest(
+        requests.append((request, f"sources.{index}.connector"))
+    for index, step in enumerate(workflow.steps):
+        requests.append(
+            (CapabilityRequest(**shared, operation=step.operation), f"steps.{index}.operation")
+        )
+    for index, output in enumerate(workflow.outputs):
+        request = CapabilityRequest(
             engine=training_engine if output.dataset == "ml.test_predictions" else workflow.engine,
             profile=workflow.execution.profile,
             operation="write",
@@ -120,31 +123,29 @@ def preflight(
             format=output.format
             or (output.connector if output.connector in {"csv", "parquet", "delta"} else None),
         )
-        for output in workflow.outputs
-    )
+        requests.append((request, f"outputs.{index}.connector"))
     if workflow.ml is not None:
-        requests.extend(
-            CapabilityRequest(
+        for index, algorithm in enumerate(workflow.ml.algorithms):
+            request = CapabilityRequest(
                 engine=training_engine,
                 profile=workflow.execution.profile,
                 operation="fit",
                 task=workflow.ml.task,
                 algorithm=algorithm.name,
             )
-            for algorithm in workflow.ml.algorithms
-        )
+            requests.append((request, f"ml.algorithms.{index}.name"))
         if transfer is not None and transfer.enabled:
-            requests.append(
-                CapabilityRequest(
-                    operation="transfer",
-                    engine=transfer.source_engine,
-                    target_engine=transfer.target_engine,
-                    profile=workflow.execution.profile,
-                )
+            request = CapabilityRequest(
+                operation="transfer",
+                engine=transfer.source_engine,
+                target_engine=transfer.target_engine,
+                profile=workflow.execution.profile,
             )
+            requests.append((request, "ml.input_transfer"))
     if workflow.model is not None:
-        requests.append(CapabilityRequest(**shared, operation="predict"))
-    policy.check(workflow, context, operations=[request.operation for request in requests])
+        requests.append((CapabilityRequest(**shared, operation="predict"), "model.uri"))
+    policy.check(workflow, context, operations=[request.operation for request, _ in requests])
     return tuple(
-        registry.require(request, allowed=context.allowed_capabilities) for request in requests
+        registry.require(request, allowed=context.allowed_capabilities, path=path)
+        for request, path in requests
     )

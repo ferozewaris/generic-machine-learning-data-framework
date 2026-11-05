@@ -247,9 +247,9 @@ Further implementation follows the remaining dependencies. Publishing, provision
 - Scope: complete T005–T087 in dependency order (T080 optional), preserving T001–T004.
 - Baseline: clean `codex/library-core` at 16553d6; no applicable AGENTS.md found in repository or parent paths. Existing suite: 86 tests.
 - Checks: `.venv/bin/python -m pytest`, Ruff check/format, `build --no-isolation`, `git diff --check`. No type checker configured.
-- Current slice: T087 explicit ML intent. T005–T006 completed with acceptance evidence; T007 follows T087.
+- Current slice: T007 local schema-checked CSV reader. T005–T006 and T087 completed with acceptance evidence.
 - Workflow: focused RED/GREEN → five-axis review/mutation check → fix → simplify only when useful → recheck → atomic local commit. No push, merge, deploy, or provisioning.
-- Pending: T006 preflight, T087 explicit intent, T007 onward as ordered above. No later capability is claimed implemented.
+- Pending: T007 onward as ordered above. No later capability is claimed implemented.
 - External evidence: real Kubernetes/AWS/Databricks/Snowflake/database/cloud-service checks need existing authorized environments; continue independent local work. Optional T080 needs user data and is not required for release.
 - T005a: 6 error-contract tests pass (92 total); RED confirmed missing module, plus unhashable-code regression. Message-guard mutation caught. Ruff/build pass. Five-axis review: no actionable findings; no simplification justified. Mutation restored and focused suite rechecked.
 - Findings: malformed code list initially escaped as TypeError; fixed with boundary type check. Later task evidence remains pending.
@@ -270,3 +270,5 @@ Further implementation follows the remaining dependencies. Publishing, provision
 - T087 split before implementation: a) explicit fields/defaults/metric semantics (config, new contract tests, updated prior intent fixture, docs, status); b) exact provider rejection paths and only-listed candidate registry proofs; c) acceptance evidence. T087a20 tests pass; stricter semantics update former generic-metric fixture to explicit task-valid choices. Review passed with no actionable findings; no simplification justified.
 
 - T087a verified:186 tests, Ruff/format/build pass; duplicate-guard mutation caught16 failures, restored and20 focused tests pass. T087 remains incomplete until exact provider rejection/registry criteria are verified.
+
+- T087 completed:26 explicit-intent tests,192 full-suite tests; Ruff/format/build pass. Candidate-field-path mutation caught4 failures, source restored/rechecked. Independent review: no actionable findings; no simplification justified. Backend acceptance remains pending actual providers.
