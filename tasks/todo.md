@@ -299,7 +299,7 @@ python3 -m pytest tests/contract/core/test_explicit_ml_config.py -q
 
 <a id="t007"></a>
 
-### [ ] T007: Read a schema-checked local CSV
+### [x] T007: Read a schema-checked local CSV
 
 **Description:** Deliver this data-io capability through the provider contracts, keeping previously completed paths working.
 
@@ -307,9 +307,9 @@ python3 -m pytest tests/contract/core/test_explicit_ml_config.py -q
 
 **Acceptance criteria:**
 
-- [ ] CSV reads honor declared encoding, delimiter, nulls, column types, and date parsing.
-- [ ] Malformed rows, schema mismatch, and missing files produce safe distinct errors; fixtures cover empty/Unicode/decimal/date values.
-- [ ] Read results expose engine/schema/source identity without hidden conversion; pandas is an optional backend dependency.
+- [x] CSV reads honor declared encoding, delimiter, nulls, column types, and date parsing.
+- [x] Malformed rows, schema mismatch, and missing files produce safe distinct errors; fixtures cover empty/Unicode/decimal/date values.
+- [x] Read results expose engine/schema/source identity without hidden conversion; pandas is an optional backend dependency.
 
 **Verification:**
 
@@ -317,7 +317,7 @@ python3 -m pytest tests/contract/core/test_explicit_ml_config.py -q
 python3 -m pytest tests/contract/data_io/test_csv_read.py -q
 ```
 
-- [ ] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
+- [x] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
 
 **Dependencies:** T006
 
@@ -329,6 +329,8 @@ python3 -m pytest tests/contract/data_io/test_csv_read.py -q
 - `pyproject.toml`
 
 **Estimated scope:** Medium (4 files).
+
+**Evidence (2026-11-05):** T007a private dataset handle; T007b real pandas strict CSV reader; T007c usage/profile documentation.30 CSV contract tests plus core contracts give223 total passing tests. Encoding/delimiter/nulls/types/date/timestamp/decimal/empty/Unicode and safe distinct failure cases are covered; denied access opens no source. RED preceded implementation and all review fixes; row-width mutation caught. Independent re-review has no actionable findings. Separate simplification removed redundant UnicodeError catch;30 unchanged tests, Ruff/format/build pass. Pinned optional extra installed successfully; reader import remains backend-lazy. Source snapshot/version intentionally unknown. Documented YAML validated after quoting its literal NULL token.
 
 <a id="t008"></a>
 

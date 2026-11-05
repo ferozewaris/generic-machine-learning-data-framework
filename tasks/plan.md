@@ -247,9 +247,9 @@ Further implementation follows the remaining dependencies. Publishing, provision
 - Scope: complete T005–T087 in dependency order (T080 optional), preserving T001–T004.
 - Baseline: clean `codex/library-core` at 16553d6; no applicable AGENTS.md found in repository or parent paths. Existing suite: 86 tests.
 - Checks: `.venv/bin/python -m pytest`, Ruff check/format, `build --no-isolation`, `git diff --check`. No type checker configured.
-- Current slice: T007 local schema-checked CSV reader. T005–T006 and T087 completed with acceptance evidence.
+- Current slice: T008 basic pandas select/cast/sort operations. T005–T007 and T087 completed with acceptance evidence.
 - Workflow: focused RED/GREEN → five-axis review/mutation check → fix → simplify only when useful → recheck → atomic local commit. No push, merge, deploy, or provisioning.
-- Pending: T007 onward as ordered above. No later capability is claimed implemented.
+- Pending: T008 onward as ordered above. No later capability is claimed implemented.
 - External evidence: real Kubernetes/AWS/Databricks/Snowflake/database/cloud-service checks need existing authorized environments; continue independent local work. Optional T080 needs user data and is not required for release.
 - T005a: 6 error-contract tests pass (92 total); RED confirmed missing module, plus unhashable-code regression. Message-guard mutation caught. Ruff/build pass. Five-axis review: no actionable findings; no simplification justified. Mutation restored and focused suite rechecked.
 - Findings: malformed code list initially escaped as TypeError; fixed with boundary type check. Later task evidence remains pending.
@@ -278,3 +278,5 @@ Further implementation follows the remaining dependencies. Publishing, provision
 - T007a complete slice: DatasetRef private native binding with source unchanged and metadata-only JSON restored; RED missing API then23 core type tests/193 total pass. Five-axis self-review found no actionable issue; no simplification justified. Ruff/build pass. CSV reader and pandas profile still pending; T007 remains unchecked.
 
 - T007b complete slice: strict local CSV reader and Reader protocol; pandas extra installed/verified (pandas3.1.1, numpy2.4.6, python-dateutil4.0.0, tzdata2026.6).30 CSV tests/223 total pass. Review regressions fixed malformed encoding and implicit date-null conversion; nonregular/remote inputs and malformed rows reject. Row-width mutation caught1 targeted failure; restored/rechecked. Independent review: no actionable findings; Ruff/format/build pass. T007c docs/evidence pending; no source snapshot guarantee.
+
+- T007 completed:30 real CSV tests/223 total, optionalprofile install, lint/format/build and docs sample verification pass. Five-axis reviews clean after fixes; separate exception simplification rechecked. No platform/large-data/snapshot evidence claimed. T008 is next.

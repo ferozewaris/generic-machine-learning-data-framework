@@ -21,7 +21,7 @@ columns:
 options:
   encoding: utf-8
   delimiter: ','
-  null_values: [NULL]
+  null_values: ['NULL']
   date_formats:
     day: '%Y-%m-%d'
 ```
