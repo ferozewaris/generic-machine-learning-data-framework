@@ -1,4 +1,7 @@
+import logging
+import traceback
 from copy import deepcopy
+from io import StringIO
 
 import pytest
 
@@ -273,3 +276,39 @@ def test_read_and_encoding_errors_are_safe(tmp_path):
     path.write_bytes(b"\xff")
     with pytest.raises(ConfigError, match="invalid_utf8"):
         load_config(path)
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "password: !!int ExamplePassword123\n",
+        "password: !!bool ExamplePassword123\n",
+        "password: !!float ExamplePassword123\n",
+        "password: !!timestamp ExamplePassword123\n",
+        "date: 2026-02-30\n",
+        "value: !!int ''\n",
+        "value: !!float ''\n",
+        "password: [ExamplePassword123\n",
+    ],
+)
+def test_yaml_failures_are_safe_in_python_tracebacks_and_logs(tmp_path, text):
+    from gmldf.core.config import load_config
+
+    path = tmp_path / "workflow.yaml"
+    path.write_text(text)
+    with pytest.raises(ConfigError) as caught:
+        load_config(path)
+    error = caught.value
+    assert error.code == "CONFIG_INVALID"
+    assert error.reason == "invalid_yaml"
+    assert error.path == "document" or error.path.startswith("line:")
+    formatted = "".join(traceback.format_exception(error))
+    assert "examplepassword123" not in formatted.casefold()
+    assert "yaml.constructor" not in formatted
+
+    output = StringIO()
+    logger = logging.Logger("yaml-error-regression")
+    logger.addHandler(logging.StreamHandler(output))
+    logger.error("Invalid config", exc_info=(type(error), error, error.__traceback__))
+    assert "examplepassword123" not in output.getvalue().casefold()
+    assert "yaml.constructor" not in output.getvalue()

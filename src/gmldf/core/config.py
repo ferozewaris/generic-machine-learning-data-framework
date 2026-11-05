@@ -128,8 +128,13 @@ def load_config(path: str | Path) -> "WorkflowSpec":
         raise ConfigError("document", "invalid_utf8") from exc
     try:
         config = yaml.load(text, Loader=_ConfigLoader)
-    except yaml.YAMLError as exc:
-        raise ConfigError("document", "invalid_yaml") from exc
+    except ConfigError:
+        raise
+    except (yaml.YAMLError, ValueError, LookupError, AttributeError) as exc:
+        # Scalar constructors can raise builtin errors containing raw input.
+        mark = getattr(exc, "problem_mark", None)
+        path = f"line:{mark.line + 1}" if mark is not None else "document"
+        raise ConfigError(path, "invalid_yaml") from None
     return validate_config(config)
 
 

@@ -180,6 +180,8 @@ python3 -m pytest tests/unit/core/test_config.py tests/contract/core/test_valida
 
 **Evidence (2026-11-05):** T004a/b/c completed with tests written RED before behavior. Strict model, safe YAML/reference, offline CLI/report, and near-limit profile-override regression tests pass. Full suite: 71 tests. Ruff/build passed; editable installation and standard-pip wheel installation in a clean base-only environment succeeded. Reports explicitly leave backend capabilities unchecked.
 
+**Review follow-up:** Fixed scalar-constructor exception normalization and raw YAML parser traceback exposure. Fifteen regressions failed before the fix and pass afterward, covering Python tracebacks/logging and CLI exit/error output; full suite now passes 86 tests.
+
 
 <a id="t005"></a>
 

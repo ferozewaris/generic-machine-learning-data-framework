@@ -6,7 +6,7 @@ This table distinguishes profiles to test from verified behavior. Only an execut
 
 | Capability/profile | Status | Evidence |
 |---|---|---|
-| CPython 3.11.18 / macOS arm64 / base install and offline config validation | Verified | T003–T004: editable install, clean standard-pip wheel install, 71 passing tests, Ruff, sdist/wheel build |
+| CPython 3.11.18 / macOS arm64 / base install and offline config validation | Verified | T003–T004: editable install, clean standard-pip wheel install, 86 passing tests, Ruff, sdist/wheel build |
 | CSV/Parquet and data-only workflows | Planned | T007–T013 |
 | Spark/pandas/Polars/DuckDB processing | Planned | T008, T034–T045 |
 | All four tasks and requested ML integrations | Planned | T014–T024, T046–T056 |

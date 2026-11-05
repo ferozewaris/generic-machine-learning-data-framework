@@ -102,6 +102,30 @@ def test_duplicate_yaml_keys_do_not_echo_secret_values(config_path):
     assert "SENTINEL_SECRET" not in result.stderr
 
 
+@pytest.mark.parametrize(
+    "text",
+    [
+        "password: !!int ExamplePassword123\n",
+        "password: !!bool ExamplePassword123\n",
+        "password: !!float ExamplePassword123\n",
+        "password: !!timestamp ExamplePassword123\n",
+        "date: 2026-02-30\n",
+        "value: !!int ''\n",
+        "value: !!float ''\n",
+    ],
+)
+def test_scalar_constructor_errors_are_safe_cli_config_failures(config_path, text):
+    config_path.write_text(text)
+    result = invoke(config_path)
+    assert result.returncode == 2
+    assert result.stdout == ""
+    error = json.loads(result.stderr)["error"]
+    assert error["code"] == "CONFIG_INVALID"
+    assert error["reason"] == "invalid_yaml"
+    assert "examplepassword123" not in result.stderr.casefold()
+    assert "Traceback" not in result.stderr
+
+
 def test_invalid_profile_uses_the_same_structured_error(config_path):
     result = invoke(config_path, "--profile", "bad profile")
     assert result.returncode == 2
