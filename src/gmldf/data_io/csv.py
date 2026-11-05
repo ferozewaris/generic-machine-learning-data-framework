@@ -43,6 +43,37 @@ class CSVOptions(Spec):
     utc: bool = False
 
 
+def _validate_framing(encoding: str, delimiter: str, path_prefix: str) -> None:
+    try:
+        # Validate the text codec without opening the configured source.
+        io.TextIOWrapper(io.BytesIO(), encoding=encoding).close()
+    except (LookupError, ValueError) as cause:
+        raise ConfigError(f"{path_prefix}.options.encoding", "unsupported_encoding") from cause
+    if delimiter in {"\n", "\r", "\0", '"'}:
+        raise ConfigError(f"{path_prefix}.options.delimiter", "unsupported_delimiter")
+
+
+def _local_path(location: str | None, path_prefix: str) -> Path:
+    if location is None:
+        raise ConfigError(f"{path_prefix}.location", "local_file_required")
+    try:
+        parsed = urlsplit(location)
+    except ValueError as cause:
+        raise ConfigError(f"{path_prefix}.location", "local_file_required") from cause
+    if (
+        parsed.scheme == "file"
+        and parsed.netloc in {"", "localhost"}
+        and not parsed.query
+        and not parsed.fragment
+    ):
+        path = Path(unquote(parsed.path))
+    elif parsed.scheme and not Path(location).drive:
+        raise ConfigError(f"{path_prefix}.location", "local_file_required")
+    else:
+        path = Path(location)
+    return path
+
+
 def _cast(series, dtype, options):
     import pandas as pd
 
@@ -105,13 +136,7 @@ class PandasCSVReader:
             field = cause.errors(include_input=False, include_context=False)[0]["loc"][0]
             suffix = f".{field}" if field in CSVOptions.model_fields else ""
             raise ConfigError(f"{path_prefix}.options{suffix}", "invalid_csv_options") from cause
-        try:
-            # Validate the text codec without opening the configured source.
-            io.TextIOWrapper(io.BytesIO(), encoding=options.encoding).close()
-        except (LookupError, ValueError) as cause:
-            raise ConfigError(f"{path_prefix}.options.encoding", "unsupported_encoding") from cause
-        if options.delimiter in {"\n", "\r", "\0", '"'}:
-            raise ConfigError(f"{path_prefix}.options.delimiter", "unsupported_delimiter")
+        _validate_framing(options.encoding, options.delimiter, path_prefix)
         if not source.columns or any(
             not name or dtype not in COLUMN_TYPES for name, dtype in source.columns.items()
         ):
@@ -119,23 +144,7 @@ class PandasCSVReader:
         dates = {name for name, dtype in source.columns.items() if dtype in {"date", "timestamp"}}
         if set(options.date_formats) != dates:
             raise ConfigError(f"{path_prefix}.options.date_formats", "date_formats_required")
-        if source.location is None:
-            raise ConfigError(f"{path_prefix}.location", "local_file_required")
-        try:
-            parsed = urlsplit(source.location)
-        except ValueError as cause:
-            raise ConfigError(f"{path_prefix}.location", "local_file_required") from cause
-        if (
-            parsed.scheme == "file"
-            and parsed.netloc in {"", "localhost"}
-            and not parsed.query
-            and not parsed.fragment
-        ):
-            path = Path(unquote(parsed.path))
-        elif parsed.scheme and not Path(source.location).drive:
-            raise ConfigError(f"{path_prefix}.location", "local_file_required")
-        else:
-            path = Path(source.location)
+        path = _local_path(source.location, path_prefix)
         import pandas as pd
 
         try:
