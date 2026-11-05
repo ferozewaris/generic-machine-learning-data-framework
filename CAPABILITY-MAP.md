@@ -34,7 +34,7 @@ These are provider boundaries in one distribution, not services. Interfaces belo
 
 Proposed package/CLI: `gmldf`; proposed initial local target: Python 3.11. These names/versions are not confirmed product choices.
 Layout: `src/gmldf/`, `tests/unit/`, `tests/contract/`, `tests/integration/`, `tests/e2e/`, `examples/`, `docs/`.
-Only documentation exists. Optional user-owned container/Kubernetes examples may live under `examples/environments/`.
+A base package and offline validator are implemented; the remaining capabilities are tracked in the backlog. Optional user-owned container/Kubernetes examples may live under `examples/environments/`.
 
 After implementation, proposed development commands:
 ```sh
@@ -57,4 +57,4 @@ Paid/destructive integration actions, publishing, merging, or deploying remain o
 ## Review Boundary
 
 The confirmed intent supersedes the earlier forecasting-first release and remote-job-management design.
-These revised specs and the [plan](tasks/plan.md) await implementation-detail review; this revision writes no library code.
+Implementation follows the [plan](tasks/plan.md); current completed scope and acceptance evidence are recorded in the [backlog](tasks/todo.md). The base package and offline validator are available; remaining provider and workflow contracts are still to be implemented.

@@ -9,7 +9,7 @@ Depends on: none
 Give every module one versioned interpretation of configuration, references, capabilities, errors, and run outcomes. Users must discover invalid requests before data is read or destinations are modified.
 
 The [confirmed intent](docs/intent/generic-data-ml-library.md) defines first-release scope; shared conventions are indexed in [CAPABILITY-MAP.md](CAPABILITY-MAP.md).
-This document defines desired behavior, not currently implemented functionality.
+Implemented: offline structural config validation, bounded YAML parsing, and CLI reports (T004). Run/artifact contracts, policy/capability preflight, and full ML intent checks remain subsequent tasks.
 
 ## Tech Stack
 

@@ -1,7 +1,7 @@
 # Implementation Plan: Generic Data and Machine Learning Library
 
 Updated: 2026-11-05
-Status: aligned to confirmed product intent; technical implementation details remain draft.
+Status: implementation in progress; completed tasks and evidence are recorded in the backlog.
 Task status source: [todo.md](todo.md).
 
 ## Outcome and Scope
@@ -22,7 +22,7 @@ The library does not provision infrastructure or submit/manage remote jobs.
 - [Capability map](../CAPABILITY-MAP.md): stable eight module ids and provider dependency direction.
 - Module specs: [core](../SPEC-core-contracts.md), [I/O](../SPEC-data-io.md), [processing](../SPEC-processing.md), [AutoML](../SPEC-automl.md), [lifecycle](../SPEC-model-lifecycle.md), [workflow](../SPEC-workflow.md), [execution](../SPEC-execution.md), [examples](../SPEC-recipes.md).
 - [Idea/reference notes](../docs/ideas/portable-data-automl-framework.md): selective inspiration only.
-- Repository contains documentation; no package, tests, dependency locks, compatibility verification, or published artifact exists.
+- Implementation has started with an installable base package and offline config validation; completed-task evidence lives in the backlog. No data/ML backend, external-host verification, or published artifact exists yet.
 - This revision updates the same incomplete plan in place, retains original task ids, and implements no library code.
 
 ## Decisions Resolved by the Interview
@@ -81,7 +81,7 @@ Contract tests may use fakes to verify interfaces. Production implementations ma
 
 ## Task Index
 
-87 tasks: 86 required and optional T080. All remain unchecked.
+87 tasks: 86 required and optional T080. Current status and acceptance evidence are maintained in the backlog.
 Checkpoints follow every three displayed tasks; task details/status live only in [todo.md](todo.md).
 
 | Stage | Ordered task ids | Deliverables |
@@ -239,5 +239,5 @@ A missing entire named capability blocks first-release completion; an unsupporte
 
 ## Review Boundary
 
-The user authorized saving the confirmed intent and revising specs/plan/backlog.
-This is documentation work only; no library implementation, dependency installation, resource provisioning, publishing, or deployment is performed.
+The user authorized incremental implementation using TDD and Ponytail. T001–T004 now provide the initial decisions, installable package, and offline validator; the backlog records the verified scope.
+Further implementation follows the remaining dependencies. Publishing, provisioning, external job management, and deployment are not part of these local implementation tasks.

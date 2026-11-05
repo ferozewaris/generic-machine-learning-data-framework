@@ -11,7 +11,7 @@ The library runs through Python/CLI in the user's host. It does not provision in
 
 ## How to use this backlog
 
-- 87 stable task ids: 86 required tasks plus optional T080 for a user's business dataset. No checked task state existed before this revision and none is marked complete by editing documentation.
+- 87 stable task ids: 86 required tasks plus optional T080 for a user's business dataset. Task checkmarks reflect recorded decision artifacts or executed acceptance checks; each completed task includes evidence.
 - Original ids T001–T084 are retained. Host-control tasks were re-scoped to library installation/context/invocation. T085–T087 explicitly cover optional full-data refit, default tuning domains, and required config intent.
 - Tasks are displayed in dependency order. Newly added ids may precede older consumers; numeric id alone is not the execution order.
 - Each task has at most three acceptance criteria and five likely files; split a task before implementation if real scope exceeds that or one focused session.
@@ -135,8 +135,8 @@ python3 -m pytest tests/unit/test_install.py -q
 
 ### Checkpoint C01: After T001, T002, T003
 
-- [ ] Required tasks in this group meet their criteria; incomplete live evidence remains visible. Optional work is not counted as a release blocker.
-- [ ] Applicable focused/regression tests, build, lint, and formatting pass for implemented environments; no weakening or placeholder support.
+- [x] Required tasks in this group meet their criteria; incomplete live evidence remains visible. Optional work is not counted as a release blocker.
+- [x] Applicable focused/regression tests, build, lint, and formatting pass for implemented environments; no weakening or placeholder support.
 - [ ] Review milestone evidence and dependencies before proceeding; intermediate examples do not constitute release completion.
 
 
@@ -144,17 +144,19 @@ python3 -m pytest tests/unit/test_install.py -q
 
 <a id="t004"></a>
 
-### [ ] T004: Validate configuration through the CLI
+### [x] T004: Validate configuration through the CLI
 
 **Description:** Deliver this core-contracts capability through the provider contracts, keeping previously completed paths working.
+
+Implementation slices (same task id, independent red–green checks): T004a strict models and shape tests; T004b bounded YAML/reference validation; T004c CLI/report contract and documentation. Each slice changes at most five implementation files; task evidence is tracked here separately.
 
 **Spec:** [SPEC-core-contracts.md](../SPEC-core-contracts.md)
 
 **Acceptance criteria:**
 
-- [ ] The validate CLI accepts version-1 data/train/infer configs with explicit engine and kind-specific fields; reject bad versions, unknown/duplicate keys, unsafe YAML, and oversized input.
-- [ ] Duplicate ids, unresolved inputs/outputs, and cycles are rejected within configured input-size limits.
-- [ ] Validation performs no connector calls or credential resolution; only an explicitly requested report is written.
+- [x] The validate CLI accepts version-1 data/train/infer configs with explicit engine and kind-specific fields; reject bad versions, unknown/duplicate keys, unsafe YAML, and oversized input.
+- [x] Duplicate ids, unresolved inputs/outputs, and cycles are rejected within configured input-size limits.
+- [x] Validation performs no connector calls or credential resolution; only an explicitly requested report is written.
 
 **Verification:**
 
@@ -162,7 +164,7 @@ python3 -m pytest tests/unit/test_install.py -q
 python3 -m pytest tests/unit/core/test_config.py tests/contract/core/test_validate_cli.py -q
 ```
 
-- [ ] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
+- [x] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
 
 **Dependencies:** T003
 
@@ -175,6 +177,9 @@ python3 -m pytest tests/unit/core/test_config.py tests/contract/core/test_valida
 - `docs/configuration.md`
 
 **Estimated scope:** Medium (5 files).
+
+**Evidence (2026-11-05):** T004a/b/c completed with tests written RED before behavior. Strict model, safe YAML/reference, offline CLI/report, and near-limit profile-override regression tests pass. Full suite: 71 tests. Ruff/build passed; editable installation and standard-pip wheel installation in a clean base-only environment succeeded. Reports explicitly leave backend capabilities unchecked.
+
 
 <a id="t005"></a>
 
