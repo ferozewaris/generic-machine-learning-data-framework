@@ -324,3 +324,5 @@ Further implementation follows the remaining dependencies. Publishing, provision
 - T014/C04/C05 complete:383 full tests and all configured checks pass; finalreviewclean.15 required tasks complete,71 required remain plus optional T080. Next T015 explicitlylistednaive forecast candidate, T016 ARIMA, T086 domains. No firstreleasecompletion claim.
 
 - T015 accounting slice complete:6 new metadata cases/389 full tests, Ruff/format/build pass. Missingseed/fitcount/duration/splitidentity fields reproduced RED; optionaltypedfields preserveunknownNone and existingrecords. Independent review clean; no simplification justified. Candidate fitting/evaluation stillpending, so T015 remainsunchecked.
+
+- T015 nativecandidate slice:17 modelcases/406 full tests pass; Ruff/format/build pass. MissingmoduleRED and actualns/us JSONroundtripdtypeRED fixed via canonicalmicrosecondcutoff; strictnumeric/horizon/frequency/overflow and precision checks verified. Cutoffguardmutation caught1 failure; restored/rechecked. Independent review clean; no simplification justified. Candidateonly, no workerlimits/artifactpublication claimed; baselineevaluation/accounting linkage next.
