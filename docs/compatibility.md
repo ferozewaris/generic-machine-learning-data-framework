@@ -11,7 +11,7 @@ This table distinguishes profiles to test from verified behavior. Only an execut
 | Data-only provider coordination / pinned local pandas profile | Verified | T010:20 workflow contracts including real CSV graph, failure propagation, independent commits and import isolation |
 | Local CLI invocation / pinned local pandas profile | Verified | T011:16 CLI/local cases, config-relative paths, exact persisted results, exclusive run reservations |
 | Clean offline pip install / local CSV recipe | Verified | T012:4 e2e cases, newly built wheel, isolated runtime/dev environments, config-only path changes and offline build |
-| Local Parquet | Planned | T013 |
+| Local Parquet / PyArrow26.0.1 / pinned pandas profile | Verified | T013:26 nativeParquet cases,4 format permutations, missing-extra rejection in a clean CSV-only pip install |
 | pandas select/cast/sort / pinned local pandas profile | Verified | T008:23 real pandas contract tests, stable ordering, strict casts, native handles and untouched inputs |
 | Further pandas/Spark/Polars/DuckDB processing | Planned | T034–T045 |
 | All four tasks and requested ML integrations | Planned | T014–T024, T046–T056 |
@@ -26,4 +26,4 @@ See [host-profile requirements](decisions/host-compatibility.md) and the [comple
 
 Tested core dependency versions: Pydantic 2.14.3, pydantic-core 2.50.4, PyYAML 6.0.3. This evidence does not verify any processing engine, connector, model, external host, or public PyPI installation.
 
-Tested local CSV optional profile: pandas3.1.1, NumPy2.4.6, python-dateutil4.0.0, tzdata2026.6. These exact versions are pinned in `.[pandas]` and checked by its local reader declaration. Total current suite:319 tests. Local data coordination, CLI and clean-install CSV recipe are verified; Parquet, cancellation/recovery and remote hosts remain pending.
+Tested local CSV optional profile: pandas3.1.1, NumPy2.4.6, python-dateutil4.0.0, tzdata2026.6. These exact versions are pinned in `.[pandas]` and checked by its local reader declaration. Total current suite:356 tests. Local data coordination, CLI and clean-install CSV recipe are verified; Parquet is additionally verified with PyArrow26.0.1; cancellation/recovery and remote hosts remain pending.

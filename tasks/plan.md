@@ -239,7 +239,7 @@ A missing entire named capability blocks first-release completion; an unsupporte
 
 ## Review Boundary
 
-The user authorized autonomous incremental implementation, TDD, review/fix and simplification. T001–T012 and T087 are complete; the backlog records verified scope.
+The user authorized autonomous incremental implementation, TDD, review/fix and simplification. T001–T013 and T087 are complete; the backlog records verified scope.
 Further implementation follows the remaining dependencies. Publishing, provisioning, external job management, and deployment are not part of these local implementation tasks.
 
 ## Execution status — autonomous completion
@@ -247,9 +247,9 @@ Further implementation follows the remaining dependencies. Publishing, provision
 - Scope: complete T005–T087 in dependency order (T080 optional), preserving T001–T004.
 - Baseline: clean `codex/library-core` at 16553d6; no applicable AGENTS.md found in repository or parent paths. Existing suite: 86 tests.
 - Checks: `.venv/bin/python -m pytest`, Ruff check/format, `build --no-isolation`, `git diff --check`. No type checker configured.
-- Current slice: T013 local Parquet. T001–T012 and T087 completed with acceptance evidence.
+- Current slice: T014 forecasting fixture. T001–T013 and T087 completed with acceptance evidence.
 - Workflow: focused RED/GREEN → five-axis review/mutation check → fix → simplify only when useful → recheck → atomic local commit. No push, merge, deploy, or provisioning.
-- Pending: T013 onward as ordered above. No later capability is claimed implemented.
+- Pending: T014 onward as ordered above. No later capability is claimed implemented.
 - External evidence: real Kubernetes/AWS/Databricks/Snowflake/database/cloud-service checks need existing authorized environments; continue independent local work. Optional T080 needs user data and is not required for release.
 - T005a: 6 error-contract tests pass (92 total); RED confirmed missing module, plus unhashable-code regression. Message-guard mutation caught. Ruff/build pass. Five-axis review: no actionable findings; no simplification justified. Mutation restored and focused suite rechecked.
 - Findings: malformed code list initially escaped as TypeError; fixed with boundary type check. Later task evidence remains pending.
@@ -316,3 +316,5 @@ Further implementation follows the remaining dependencies. Publishing, provision
 - T013 runtime/parity slice:4 actualCSV/Parquet input-output permutations and cleanpandas-only missingArrowextra rejection verified;355 full tests pass, Ruff/format/build pass.3 missing-provider failures reproduced RED. Exactschema/values/nulls/receipts and selectedArrowversion verified. Reader-selectionmutation caught2 failures; restored/rechecked. Independent review clean; no further simplification justified. Documentation/acceptance checkpoint next.
 
 - T013 final schema review: nonnullablevalue guard did not persist physicalfieldnullability.1 RED roundtrip regression fixed explicitArrowfield schema and readernullabilitymetadata.26 Parquet/30 format-focused/356 full tests pass; Ruff/format/build pass. Nullabilitymutation caught1 failure; restored/rechecked. Independent final review clean; no further simplification justified.
+
+- T013 complete:356 full tests and required checks pass; native format/type/nullability/date/precision evidence reviewed.14 required tasks complete,72 required remain plus optional T080. Next T014 forecastdatafixture then explicitcausal candidates; broader first-release inventory remains pending.

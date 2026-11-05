@@ -524,7 +524,7 @@ python3 -m pytest tests/e2e/test_data_only.py -q
 
 <a id="t013"></a>
 
-### [ ] T013: Add a Parquet round trip
+### [x] T013: Add a Parquet round trip
 
 **Description:** Deliver this data-io capability through the provider contracts, keeping previously completed paths working.
 
@@ -532,9 +532,9 @@ python3 -m pytest tests/e2e/test_data_only.py -q
 
 **Acceptance criteria:**
 
-- [ ] CSV and Parquet variants yield equivalent declared values/schema for synthetic example records.
-- [ ] Parquet uses the existing read/write receipts and local atomic publish behavior.
-- [ ] The selected optional Parquet dependency/version is pinned in the local environment profile.
+- [x] CSV and Parquet variants yield equivalent declared values/schema for synthetic example records.
+- [x] Parquet uses the existing read/write receipts and local atomic publish behavior.
+- [x] The selected optional Parquet dependency/version is pinned in the local environment profile.
 
 **Verification:**
 
@@ -542,7 +542,7 @@ python3 -m pytest tests/e2e/test_data_only.py -q
 python3 -m pytest tests/contract/data_io/test_parquet.py tests/e2e/test_data_formats.py -q
 ```
 
-- [ ] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
+- [x] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
 
 **Dependencies:** T012
 
@@ -554,6 +554,8 @@ python3 -m pytest tests/contract/data_io/test_parquet.py tests/e2e/test_data_for
 - `pyproject.toml`
 
 **Estimated scope:** Medium (4 files).
+
+**Evidence:**26 nativeParquet contracts,4 CSV/Parquet workflow permutations, cleanCSV-only missingextra rejection/356 total tests; Ruff/format/build pass. PinnedPyArrow26.0.1 installed locally. Storage-dependentNaN, awaredate drift and nullability findings reproduced/fixed/re-reviewed; guardmutations detected. No unresolved findings, skippedchecks or externalhost claims.
 
 <a id="t014"></a>
 
