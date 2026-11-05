@@ -1,0 +1,4 @@
+record_id,amount,category
+b,2.5,beta
+a,1.25,alpha
+c,NULL,beta

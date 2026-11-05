@@ -1,0 +1,47 @@
+schema_version: 1
+name: generic-data-example
+kind: data
+engine: pandas
+execution:
+  profile: local
+sources:
+  - id: raw
+    connector: csv
+    location: input.csv
+    columns:
+      record_id: string
+      amount: string
+      category: string
+    options:
+      encoding: utf-8
+      delimiter: ','
+      null_values: ['NULL']
+steps:
+  - id: selected
+    operation: select
+    inputs: [raw]
+    params:
+      columns: [record_id, amount]
+  - id: typed
+    operation: cast
+    inputs: [selected]
+    params:
+      columns:
+        amount: float64
+  - id: ordered
+    operation: sort
+    inputs: [typed]
+    params:
+      by: [record_id]
+      ascending: true
+      nulls: last
+outputs:
+  - id: result
+    dataset: ordered
+    connector: csv
+    location: runs/result.csv
+    mode: error_if_exists
+    options:
+      encoding: utf-8
+      delimiter: ','
+      null_value: 'NULL'
