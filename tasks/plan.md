@@ -258,3 +258,7 @@ Further implementation follows the remaining dependencies. Publishing, provision
 - Verification note: a restored same-size mutation briefly reused stale bytecode; source was correct, cache removed and focused/full suites passed. Later mutation runs clear affected bytecode explicitly.
 
 - T005 completed: 47 added tests /133 total, Ruff/format/build pass; all review findings fixed and re-reviewed. T005c preserves commit identity, safe terminal outcomes and UTC metadata. Retry-guard mutation caught. No further simplification justified. No configured type-check command exists.
+
+- T006a in progress: 15 focused tests pass; review found URI forms without authority and aggregate diagnostic size leakage/overrun. Reproduced failures and fixed URI parsing and aggregate budget; re-review passed with no remaining actionable findings. Lazy wrappers/public_error tests cover sentinel values and internal causes.
+
+- T006a complete slice (T006 still pending preflight):148 full-suite tests, Ruff/format/build pass; sensitive-key mutation detected5 failures and restored/rechecked. No simplification clearly improves the scoped code.
