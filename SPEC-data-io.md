@@ -9,7 +9,7 @@ Depends on: core-contracts
 Read configured datasets and write results through explicit source/sink contracts while preserving schemas and preventing accidental destructive or duplicate writes.
 
 The [confirmed intent](docs/intent/generic-data-ml-library.md) defines first-release scope; shared conventions are indexed in [CAPABILITY-MAP.md](CAPABILITY-MAP.md).
-This document defines desired behavior, not currently implemented functionality.
+Implemented subset: schema-checked local pandas CSV reads (T007) and atomic CSV writes (T009), documented in docs/data-io.md. Parquet, remote sources and table/database/Delta outputs remain desired work.
 
 ## Tech Stack
 

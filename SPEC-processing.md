@@ -9,12 +9,12 @@ Depends on: core-contracts
 Apply configured data transformations with documented semantics, and expose trainable preprocessing that can be fitted within each training fold and reused for inference.
 
 The [confirmed intent](docs/intent/generic-data-ml-library.md) defines first-release scope; shared conventions are indexed in [CAPABILITY-MAP.md](CAPABILITY-MAP.md).
-This document defines desired behavior, not currently implemented functionality.
+Implemented subset: real local pandas select/cast/sort (T008), documented in docs/processing.md. Other operations, engines and learned preprocessing remain desired work.
 
 ## Tech Stack
 
 Optional pandas, Polars, DuckDB, and PySpark backends. All four engines are required for the first release; examples may use a single declared engine. Core and the local backend must not require Spark or Databricks.
-Exact dependency versions and supported runtime profiles remain unresolved until compatibility validation; no new packages are installed by this specification.
+The initial local pandas profile is pinned and verified in docs/compatibility.md. Other dependency/host profiles remain unresolved until their own compatibility checks.
 
 ## Requirements and Provider Contracts
 

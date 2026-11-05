@@ -9,7 +9,7 @@ Depends on: none
 Give every module one versioned interpretation of configuration, references, capabilities, errors, and run outcomes. Users must discover invalid requests before data is read or destinations are modified.
 
 The [confirmed intent](docs/intent/generic-data-ml-library.md) defines first-release scope; shared conventions are indexed in [CAPABILITY-MAP.md](CAPABILITY-MAP.md).
-Implemented: offline structural config validation, bounded YAML parsing, and CLI reports (T004). Run/artifact contracts, policy/capability preflight, and full ML intent checks remain subsequent tasks.
+Implemented: offline config validation/CLI reports (T004), run/artifact/error contracts (T005), policy/capability and lazy-credential preflight (T006), and explicit ML intent checks (T087). Actual backend support still requires provider-specific evidence.
 
 ## Tech Stack
 

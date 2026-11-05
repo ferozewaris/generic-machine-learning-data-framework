@@ -37,3 +37,26 @@ Errors distinguish invalid parser configuration (`ConfigError`), source access (
 Metadata records engine/schema, actual row count and absolute source URI. Source version remains unknown; mutable local files have limited reproducibility. The reader validates row widths then parses through pandas and materializes the selected local file in memory. Snapshot guarantees, resource limits, workflow execution and other I/O profiles remain separate tasks.
 
 Parsing API reference: [pandas read_csv](https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html).
+
+## Local CSV writer
+
+`PandasCSVWriter.write(dataset, sink, context)` accepts a native pandas handle and returns a `WriteReceipt`. Context must allow `pandas_csv_write_new` for the default mode or `pandas_csv_write_overwrite` for explicit replacement. The destination's parent directory must exist.
+
+```yaml
+id: result
+connector: csv
+dataset: raw
+location: result.csv
+options:
+  encoding: utf-8
+  delimiter: ','
+  null_value: 'NULL'
+  date_formats:
+    day: '%Y-%m-%d'
+```
+
+The writer requires encoding, delimiter and a single null token. It renders declared column types, lowercase booleans, decimal separators and explicit temporal formats without changing the input frame. Non-midnight dates, incompatible native values, non-finite numbers and values whose rendered representation equals the null token fail before publication. CSV headers are retained even for zero rows; index values are not exported. Unicode delimiters are supported. Timestamp precision follows the explicitly chosen format.
+
+Staging uses a private temporary directory in the destination filesystem and mode-0600 files. Completed bytes are flushed before a single-file atomic publish: default `error_if_exists` cannot replace an existing or concurrently created destination; `overwrite` explicitly replaces only the selected file. Append and upsert are unsupported. Atomic visibility does not imply directory-entry crash durability or a cross-output transaction.
+
+Receipts record the SHA-256 content commit id and row count after a known commit. Failures raise `WriteFailure` with a receipt: failures before commit are `not_committed`; ambiguous acknowledgements are `unknown`; failure after a known commit retains `committed`. Uncommitted/uncertain receipts do not claim a published row count. Retry safety is never or unknown; no retry is performed. Export the controlled error and preserve the receipt when composing a workflow. Source snapshots, crash/cancellation recovery, and source-version linkage remain separate tasks.
