@@ -6,7 +6,6 @@ import math
 from decimal import Decimal
 from pathlib import Path
 from typing import Annotated, Literal
-from urllib.parse import unquote, urlsplit
 
 from pydantic import Field, ValidationError
 
@@ -14,6 +13,7 @@ from gmldf.core.capabilities import Capability, CapabilityRegistry, CapabilityRe
 from gmldf.core.config import ConfigError, OutputSpec, SourceSpec, Spec, Text
 from gmldf.core.errors import FrameworkError
 from gmldf.core.types import ColumnSpec, DatasetRef, RunContext, WriteReceipt
+from gmldf.data_io.local_paths import local_path
 from gmldf.data_io.local_publish import publish
 
 CSV_READ = Capability(
@@ -52,27 +52,6 @@ def _validate_framing(encoding: str, delimiter: str, path_prefix: str) -> None:
         raise ConfigError(f"{path_prefix}.options.encoding", "unsupported_encoding") from cause
     if delimiter in {"\n", "\r", "\0", '"'}:
         raise ConfigError(f"{path_prefix}.options.delimiter", "unsupported_delimiter")
-
-
-def _local_path(location: str | None, path_prefix: str) -> Path:
-    if location is None:
-        raise ConfigError(f"{path_prefix}.location", "local_file_required")
-    try:
-        parsed = urlsplit(location)
-    except ValueError as cause:
-        raise ConfigError(f"{path_prefix}.location", "local_file_required") from cause
-    if (
-        parsed.scheme == "file"
-        and parsed.netloc in {"", "localhost"}
-        and not parsed.query
-        and not parsed.fragment
-    ):
-        path = Path(unquote(parsed.path))
-    elif parsed.scheme and not Path(location).drive:
-        raise ConfigError(f"{path_prefix}.location", "local_file_required")
-    else:
-        path = Path(location)
-    return path
 
 
 def _cast(series, dtype, options):
@@ -145,7 +124,7 @@ class PandasCSVReader:
         dates = {name for name, dtype in source.columns.items() if dtype in {"date", "timestamp"}}
         if set(options.date_formats) != dates:
             raise ConfigError(f"{path_prefix}.options.date_formats", "date_formats_required")
-        path = _local_path(source.location, path_prefix)
+        path = local_path(source.location, path_prefix)
         return options, path
 
     def validate(self, source: SourceSpec, context: RunContext) -> None:
@@ -289,7 +268,7 @@ class PandasCSVWriter:
             suffix = f".{field}" if field in CSVWriteOptions.model_fields else ""
             raise ConfigError(f"{prefix}.options{suffix}", "invalid_csv_options") from cause
         _validate_framing(options.encoding, options.delimiter, prefix)
-        path = _local_path(sink.location, prefix)
+        path = local_path(sink.location, prefix)
         return options, path
 
     def validate(self, sink: OutputSpec, context: RunContext) -> None:
