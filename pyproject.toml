@@ -14,6 +14,7 @@ dependencies = ["pydantic>=2.14.3,<3", "PyYAML>=6.0.3,<7"]
 gmldf = "gmldf.__main__:main"
 
 [project.optional-dependencies]
+pandas = ["pandas==3.1.1", "numpy==2.4.6", "python-dateutil==4.0.0", "tzdata==2026.6"]
 dev = ["pytest==9.2.0", "ruff==0.17.3", "build==1.6.1"]
 
 [tool.hatch.build.targets.wheel]
