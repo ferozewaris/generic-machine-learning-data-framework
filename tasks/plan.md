@@ -292,3 +292,5 @@ Further implementation follows the remaining dependencies. Publishing, provision
 - T009 completed:270 full-suite tests and required lint/format/build pass; acceptance/evidence/docs reviewed with no actionable findings.10 required tasks complete,76 required remain plus optional T080. Next T010 composes providers without runtime imports or ML dependencies.
 
 - T010 split: a1) public I/O validation/capabilities; a2) public processing validation; b) provider set and dependency-ordered data runner; c) integrated acceptance/docs. T010a1 passes272 tests, Ruff/format/build; independent review clean. No simplification justified. Remaining T010 work is unchecked.
+
+- T010a2 complete slice: public processing validation, shared canonical preparation, pure parameter/arity errors rejected before dataset access.7 missing-API failures reproduced RED;30 focused/279 full tests pass, Ruff/format/build pass. Independent review clean; temporal-format guard mutation caught2 failures and restored/rechecked. No further simplification justified. Runner remains pending.

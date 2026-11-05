@@ -4,7 +4,7 @@ import math
 from collections.abc import Sequence
 from typing import Annotated, Literal
 
-from pydantic import Field, ValidationError
+from pydantic import Field
 
 from gmldf.core.capabilities import Capability, CapabilityRegistry, CapabilityRequest
 from gmldf.core.config import ConfigError, Spec, StepSpec, Text
@@ -33,8 +33,6 @@ class SortParams(Spec):
 
 
 def _select(frame, params):
-    if len(params.columns) != len(set(params.columns)):
-        raise ValueError("duplicate_columns")
     return frame.loc[:, params.columns].copy()
 
 
@@ -42,9 +40,6 @@ def _cast(frame, params):
     import pandas as pd
 
     result = frame.copy()
-    dates = {name for name, dtype in params.columns.items() if dtype in {"date", "timestamp"}}
-    if set(params.date_formats) != dates:
-        raise ValueError("explicit_date_formats_required")
     for name, dtype in params.columns.items():
         series = result[name]
         if dtype == "string":
@@ -70,10 +65,6 @@ def _cast(frame, params):
 
 
 def _sort(frame, params):
-    if len(params.by) != len(set(params.by)):
-        raise ValueError("duplicate_sort_columns")
-    if isinstance(params.ascending, list) and len(params.ascending) != len(params.by):
-        raise ValueError("sort_direction_count_mismatch")
     return frame.sort_values(
         by=params.by, ascending=params.ascending, na_position=params.nulls, kind="stable"
     )
@@ -100,27 +91,48 @@ class PandasEngine:
         for name in OPERATIONS
     )
 
+    def _prepare_step(self, step: StepSpec, context: RunContext):
+        CapabilityRegistry(self.capabilities).require(
+            CapabilityRequest(operation=step.operation, engine="pandas", profile="local"),
+            allowed=context.allowed_capabilities,
+            path=f"steps.{step.id}.operation",
+        )
+        if len(step.inputs) != 1:
+            raise ConfigError(f"steps.{step.id}.inputs", "single_named_input_required")
+        params_model, operation = OPERATIONS[step.operation]
+        try:
+            params = params_model.model_validate(step.params)
+            if isinstance(params, SelectParams) and len(params.columns) != len(set(params.columns)):
+                raise ValueError("duplicate_columns")
+            if isinstance(params, SortParams):
+                if len(params.by) != len(set(params.by)):
+                    raise ValueError("duplicate_sort_columns")
+                if isinstance(params.ascending, list) and len(params.ascending) != len(params.by):
+                    raise ValueError("sort_direction_count_mismatch")
+            if isinstance(params, CastParams):
+                dates = {
+                    name for name, dtype in params.columns.items() if dtype in {"date", "timestamp"}
+                }
+                if set(params.date_formats) != dates:
+                    raise ValueError("explicit_date_formats_required")
+        except ValueError as cause:
+            raise ConfigError(f"steps.{step.id}.params", "invalid_parameters") from cause
+        return params, operation
+
+    def validate_step(self, step: StepSpec, context: RunContext) -> None:
+        self._prepare_step(step, context)
+
     def transform(
         self, dataset: DatasetRef, steps: Sequence[StepSpec], context: RunContext
     ) -> DatasetRef:
         if dataset.engine != "pandas":
             raise FrameworkError("CAPABILITY_UNSUPPORTED", path="dataset.engine")
-        registry = CapabilityRegistry(self.capabilities)
         prepared = []
         current_id = dataset.id
         for step in steps:
-            registry.require(
-                CapabilityRequest(operation=step.operation, engine="pandas", profile="local"),
-                allowed=context.allowed_capabilities,
-                path=f"steps.{step.id}.operation",
-            )
+            params, operation = self._prepare_step(step, context)
             if step.inputs != [current_id]:
                 raise ConfigError(f"steps.{step.id}.inputs", "single_named_input_required")
-            params_model, operation = OPERATIONS[step.operation]
-            try:
-                params = params_model.model_validate(step.params)
-            except ValidationError as cause:
-                raise ConfigError(f"steps.{step.id}.params", "invalid_parameters") from cause
             prepared.append((step, params, operation))
             current_id = step.id
         if not prepared:

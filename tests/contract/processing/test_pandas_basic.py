@@ -170,16 +170,16 @@ def test_multikey_stable_sort_has_explicit_directions_and_null_order(context):
 
 
 @pytest.mark.parametrize(
-    "params",
+    "params,error",
     [
-        {"by": ["x"], "ascending": [True, False]},
-        {"by": ["x", "x"]},
-        {"by": ["missing"]},
+        ({"by": ["x"], "ascending": [True, False]}, ConfigError),
+        ({"by": ["x", "x"]}, ConfigError),
+        ({"by": ["missing"]}, FrameworkError),
     ],
 )
-def test_invalid_sort_keys_and_direction_shapes_fail_safely(context, params):
+def test_invalid_sort_keys_and_direction_shapes_fail_safely(context, params, error):
     step = StepSpec(id="ordered", operation="sort", inputs=["raw"], params=params)
-    with pytest.raises(FrameworkError):
+    with pytest.raises(error):
         PandasEngine().transform(dataset(pd.DataFrame({"x": ["a"]})), [step], context)
 
 
@@ -212,4 +212,32 @@ def test_all_steps_are_authorized_before_any_step_runs(context):
     denied = context.model_copy(update={"allowed_capabilities": ["pandas_cast"]})
     with pytest.raises(FrameworkError) as caught:
         PandasEngine().transform(ref, steps, denied)
+    assert caught.value.error.code == "POLICY_DENIED"
+
+
+@pytest.mark.parametrize(
+    "operation,params,inputs",
+    [
+        ("select", {"columns": ["x", "x"]}, ["raw"]),
+        ("sort", {"by": ["x", "x"]}, ["raw"]),
+        ("sort", {"by": ["x"], "ascending": []}, ["raw"]),
+        ("cast", {"columns": {"x": "date"}}, ["raw"]),
+        ("cast", {"columns": {"x": "string"}, "date_formats": {"x": "%Y"}}, ["raw"]),
+        ("select", {"columns": ["x"]}, ["raw", "other"]),
+    ],
+)
+def test_step_validation_rejects_intrinsic_errors_without_a_dataset(
+    context, operation, params, inputs
+):
+    step = StepSpec(id="out", operation=operation, inputs=inputs, params=params)
+    with pytest.raises(ConfigError) as caught:
+        PandasEngine().validate_step(step, context)
+    assert caught.value.path in {"steps.out.params", "steps.out.inputs"}
+
+
+def test_step_validation_accepts_data_dependent_columns_and_enforces_policy(context):
+    step = StepSpec(id="out", operation="select", inputs=["raw"], params={"columns": ["unknown"]})
+    assert PandasEngine().validate_step(step, context) is None
+    with pytest.raises(FrameworkError) as caught:
+        PandasEngine().validate_step(step, context.model_copy(update={"allowed_capabilities": []}))
     assert caught.value.error.code == "POLICY_DENIED"
