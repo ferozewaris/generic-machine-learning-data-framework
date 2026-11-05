@@ -106,6 +106,7 @@ class PandasCSVReader:
             suffix = f".{field}" if field in CSVOptions.model_fields else ""
             raise ConfigError(f"{path_prefix}.options{suffix}", "invalid_csv_options") from cause
         try:
+            # Validate the text codec without opening the configured source.
             io.TextIOWrapper(io.BytesIO(), encoding=options.encoding).close()
         except (LookupError, ValueError) as cause:
             raise ConfigError(f"{path_prefix}.options.encoding", "unsupported_encoding") from cause
@@ -166,7 +167,7 @@ class PandasCSVReader:
             raise
         except OSError as cause:
             raise FrameworkError("DATA_INVALID", path=f"{path_prefix}.location") from cause
-        except (ValueError, csv.Error, UnicodeError) as cause:
+        except (ValueError, csv.Error) as cause:
             raise FrameworkError("DATA_INVALID", path=f"{path_prefix}.rows") from cause
         try:
             for column in frame.columns:
