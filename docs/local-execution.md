@@ -1,12 +1,12 @@
 # Local CLI execution
 
-Install the local optional profile (`python -m pip install '.[pandas]'` from this checkout), then invoke:
+Install the local optional profile (`python -m pip install '.[pandas]'`, or `'.[parquet]'` for Parquet, from this checkout), then invoke:
 
 ```sh
 python -m gmldf run --config /path/to/workflow.yaml --profile local --run-id data_demo --output-dir runs
 ```
 
-This currently executes data-only pandas CSV workflows with select/cast/sort. Unsupported engines, host profiles, connectors and workflow kinds reject before business data access. Engine selection comes only from config. The command uses the same workflow runner as Python coordination; `gmldf.execution.local.run_local(config_path, profile=..., run_id=..., output_dir=Path(...))` returns its `RunResult`.
+This currently executes data-only pandas CSV/Parquet workflows with select/cast/sort. Unsupported engines, host profiles, connectors and workflow kinds reject before business data access. Engine selection comes only from config. The command uses the same workflow runner as Python coordination; `gmldf.execution.local.run_local(config_path, profile=..., run_id=..., output_dir=Path(...))` returns its `RunResult`.
 
 Relative source/output locations, relative local `file:` URIs and relative `--output-dir` resolve against the config directory. Absolute paths remain absolute. The output directory holds a per-run subdirectory, so this command reserves `<config directory>/runs/data_demo/`. It writes `identity.json` and `result.json` there using atomic no-replacement publication. Configured business outputs may not alias those reserved paths.
 

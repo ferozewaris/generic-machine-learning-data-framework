@@ -13,7 +13,7 @@ uv pip install --python .venv/bin/python -e '.[dev,pandas,parquet]'
 
 An equivalent Python 3.11+ virtual environment and pip installation also work; uv is a development convenience, not a runtime dependency.
 
-The base currently depends on Pydantic and PyYAML only. `dev` adds pytest, Ruff, build tooling and the pinned Hatchling backend for offline no-isolation builds. The `pandas` extra pins the tested local CSV backend profile. The `parquet` extra adds pinned PyArrow26.0.1; its provider implementation is in progress. Other engine/connector/ML extras will be introduced with real implementations; unimplemented extras are not advertised.
+The base currently depends on Pydantic and PyYAML only. `dev` adds pytest, Ruff, build tooling and the pinned Hatchling backend for offline no-isolation builds. The `pandas` extra pins the tested local CSV backend profile. The `parquet` extra adds pinned PyArrow26.0.1; local Parquet providers are verified for this pinned profile. Other engine/connector/ML extras will be introduced with real implementations; unimplemented extras are not advertised.
 
 For base-only core checks, install `.[dev]` and run `.venv/bin/python -m pytest tests/unit/core tests/contract/core tests/unit/test_install.py -q`. The full current suite additionally requires `.[pandas,parquet]` for native CSV and both pandas string-storage paths; unavailable optional profiles are not treated as skipped passes.
 
