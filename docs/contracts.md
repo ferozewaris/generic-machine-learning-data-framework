@@ -1,6 +1,6 @@
 # Core metadata contracts
 
-`gmldf.core.types` contains strict metadata models; serialize with `model_dump_json()` and restore with the concrete model's `model_validate_json()`. Extra fields and opaque compute/model handles are rejected. Compute providers keep those handles separately in process.
+`gmldf.core.types` contains strict metadata models; serialize with `model_dump_json()` and restore with the concrete model's `model_validate_json()`. Extra fields and opaque compute/model handles are rejected. A provider may return a DatasetRef copy bound to an opaque native handle with `with_handle(handle)`. The `handle` property is private process-local storage, excluded from JSON and representations; metadata-only references restore with `handle is None`. No dataframe operations or conversions are exposed by this binding.
 
 - `DatasetRef`: dataset id, engine, ordered column name/type/nullability, materialization kind, optional source URI/version and known row count (`null` means unknown).
 - `ArtifactRef`: credential-free URI, immutable version, kind, manifest schema version, SHA-256 checksum and producing run. Integrity does not establish trust; loading must enforce trust separately.

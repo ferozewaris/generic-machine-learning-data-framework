@@ -214,3 +214,16 @@ def test_manifest_versions_require_integer_one(version):
                 default=lambda x: x.model_dump(mode="json"),
             )
         )
+
+
+def test_bound_dataset_keeps_native_handle_private_and_out_of_json():
+    metadata = DatasetRef(id="raw", engine="pandas", columns=[], materialization="memory")
+    native = object()
+    bound = metadata.with_handle(native)
+    assert bound.handle is native
+    assert metadata.handle is None
+    assert "handle" not in bound.model_dump_json()
+    assert "object at" not in repr(bound)
+    restored = DatasetRef.model_validate_json(bound.model_dump_json())
+    assert restored.handle is None
+    assert restored.model_dump() == metadata.model_dump()

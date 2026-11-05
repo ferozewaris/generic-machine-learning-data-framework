@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from typing import Annotated, Literal
 from urllib.parse import urlsplit
 
-from pydantic import AfterValidator, ConfigDict, Field, JsonValue, model_validator
+from pydantic import AfterValidator, ConfigDict, Field, JsonValue, PrivateAttr, model_validator
 
 from gmldf.core.config import Engine, Name, Spec, Text
 from gmldf.core.errors import ErrorInfo, RetrySafety
@@ -53,6 +53,16 @@ class DatasetRef(Manifest):
     source_uri: SafeURI | None = None
     source_version: Text | None = None
     row_count: Annotated[int, Field(ge=0)] | None = None
+    _handle: object | None = PrivateAttr(default=None)
+
+    @property
+    def handle(self) -> object | None:
+        return self._handle
+
+    def with_handle(self, handle: object) -> "DatasetRef":
+        bound = self.model_copy()
+        bound._handle = handle
+        return bound
 
     @model_validator(mode="after")
     def unique_columns(self):

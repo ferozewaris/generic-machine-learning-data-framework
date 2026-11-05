@@ -272,3 +272,7 @@ Further implementation follows the remaining dependencies. Publishing, provision
 - T087a verified:186 tests, Ruff/format/build pass; duplicate-guard mutation caught16 failures, restored and20 focused tests pass. T087 remains incomplete until exact provider rejection/registry criteria are verified.
 
 - T087 completed:26 explicit-intent tests,192 full-suite tests; Ruff/format/build pass. Candidate-field-path mutation caught4 failures, source restored/rechecked. Independent review: no actionable findings; no simplification justified. Backend acceptance remains pending actual providers.
+
+- T007 split: a) attach optional in-process native handles to DatasetRef via private storage (JSON remains metadata only), preserving provider read→DatasetRef contract; b) pinned pandas optional dependency and strict local CSV reader/fixtures; c) compatibility/docs/evidence. No universal dataframe operations or hidden conversion.
+
+- T007a complete slice: DatasetRef private native binding with source unchanged and metadata-only JSON restored; RED missing API then23 core type tests/193 total pass. Five-axis self-review found no actionable issue; no simplification justified. Ruff/build pass. CSV reader and pandas profile still pending; T007 remains unchecked.
