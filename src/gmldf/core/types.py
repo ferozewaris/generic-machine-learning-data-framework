@@ -110,6 +110,10 @@ class CandidateRecord(Manifest):
     parameters: dict[str, JsonValue]
     validation_score: float | None = None
     error: ErrorInfo | None = None
+    seed: int | None = None
+    fit_count: Annotated[int, Field(ge=0)] | None = None
+    duration_seconds: Annotated[float, Field(ge=0)] | None = None
+    split_id: Checksum | None = None
 
 
 class Assessment(Manifest):

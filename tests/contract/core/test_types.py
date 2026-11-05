@@ -227,3 +227,47 @@ def test_bound_dataset_keeps_native_handle_private_and_out_of_json():
     restored = DatasetRef.model_validate_json(bound.model_dump_json())
     assert restored.handle is None
     assert restored.model_dump() == metadata.model_dump()
+
+
+def test_candidate_record_retains_fit_accounting_seed_and_split_identity():
+    from gmldf.core.types import CandidateRecord
+
+    record = CandidateRecord(
+        trial_id="trial",
+        algorithm="naive.last",
+        status="succeeded",
+        parameters={},
+        validation_score=1.0,
+        seed=42,
+        fit_count=1,
+        duration_seconds=0.25,
+        split_id="sha256:" + "a" * 64,
+    )
+    restored = CandidateRecord.model_validate_json(record.model_dump_json())
+    assert restored == record
+    assert restored.fit_count == 1
+    assert restored.seed == 42
+    assert restored.duration_seconds == 0.25
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("fit_count", -1),
+        ("fit_count", True),
+        ("duration_seconds", -0.1),
+        ("duration_seconds", float("inf")),
+        ("split_id", "unverified"),
+    ],
+)
+def test_candidate_accounting_rejects_invalid_metadata(field, value):
+    from gmldf.core.types import CandidateRecord
+
+    with pytest.raises(ValidationError):
+        CandidateRecord(
+            trial_id="trial",
+            algorithm="naive.last",
+            status="succeeded",
+            parameters={},
+            **{field: value},
+        )
