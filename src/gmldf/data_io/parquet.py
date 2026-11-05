@@ -6,10 +6,11 @@ from pathlib import Path
 from pydantic import ValidationError
 
 from gmldf.core.capabilities import Capability, CapabilityRegistry, CapabilityRequest
-from gmldf.core.config import ConfigError, SourceSpec, Spec
+from gmldf.core.config import ConfigError, OutputSpec, SourceSpec, Spec
 from gmldf.core.errors import FrameworkError
-from gmldf.core.types import ColumnSpec, DatasetRef, RunContext
+from gmldf.core.types import ColumnSpec, DatasetRef, RunContext, WriteReceipt
 from gmldf.data_io.local_paths import local_path
+from gmldf.data_io.local_publish import publish
 
 PARQUET_READ = Capability(
     id="pandas_parquet_read",
@@ -137,3 +138,103 @@ class PandasParquetReader:
             source_uri=path.resolve().as_uri(),
             source_version=None,
         ).with_handle(frame)
+
+
+def _array(series, dtype):
+    from datetime import date, datetime
+
+    import pandas as pd
+    import pyarrow as pa
+
+    if dtype == "date":
+        dates = []
+        for value in series:
+            if pd.isna(value):
+                dates.append(None)
+                continue
+            if not isinstance(value, date):
+                raise ValueError("native_date_required")
+            if isinstance(value, datetime):
+                if pd.Timestamp(value) != pd.Timestamp(value).normalize():
+                    raise ValueError("non_midnight_date")
+                # Arrow otherwise converts aware datetimes through UTC and can shift the day.
+                value = value.date()
+            dates.append(value)
+        series = dates
+    types = {
+        "string": pa.string(),
+        "int64": pa.int64(),
+        "float64": pa.float64(),
+        "boolean": pa.bool_(),
+        "date": pa.date32(),
+    }
+    array = pa.array(series, type=types.get(dtype), from_pandas=True, safe=True)
+    _check_column(array, dtype)
+    return array
+
+
+class PandasParquetWriter:
+    capabilities = tuple(
+        PARQUET_READ.model_copy(
+            update={"id": f"pandas_parquet_write_{suffix}", "operation": "write", "mode": mode}
+        )
+        for suffix, mode in (("new", "error_if_exists"), ("overwrite", "overwrite"))
+    )
+
+    def _prepare(self, sink: OutputSpec, context: RunContext) -> Path:
+        prefix = f"outputs.{sink.id}"
+        CapabilityRegistry(self.capabilities).require(
+            CapabilityRequest(
+                operation="write",
+                engine="pandas",
+                profile="local",
+                connector=sink.connector,
+                format=sink.format or "parquet",
+                mode=sink.mode,
+            ),
+            allowed=context.allowed_capabilities,
+            path=f"{prefix}.mode",
+        )
+        try:
+            Spec.model_validate(sink.options)
+        except ValidationError as cause:
+            raise ConfigError(f"{prefix}.options", "invalid_parquet_options") from cause
+        return local_path(sink.location, prefix)
+
+    def validate(self, sink: OutputSpec, context: RunContext) -> None:
+        self._prepare(sink, context)
+
+    def write(self, dataset: DatasetRef, sink: OutputSpec, context: RunContext) -> WriteReceipt:
+        if dataset.engine != "pandas":
+            raise FrameworkError("CAPABILITY_UNSUPPORTED", path="dataset.engine")
+        path = self._prepare(sink, context)
+        if not dataset.columns or any(
+            column.dtype not in COLUMN_TYPES for column in dataset.columns
+        ):
+            raise ConfigError(f"outputs.{sink.id}.columns", "explicit_supported_types_required")
+        import pandas as pd
+        import pyarrow as pa
+        import pyarrow.parquet as pq
+
+        frame = dataset.handle
+        if not isinstance(frame, pd.DataFrame) or list(frame.columns) != [
+            c.name for c in dataset.columns
+        ]:
+            raise FrameworkError("DATA_INVALID", path=f"outputs.{sink.id}.columns")
+        try:
+            arrays = [_array(frame[column.name], column.dtype) for column in dataset.columns]
+            for column, array in zip(dataset.columns, arrays, strict=True):
+                if not column.nullable and array.null_count:
+                    raise ValueError("nullability_violation")
+            table = pa.Table.from_arrays(arrays, names=list(frame.columns))
+        except Exception as cause:
+            raise FrameworkError("DATA_INVALID", path=f"outputs.{sink.id}.columns") from cause
+        return publish(
+            path,
+            output_id=sink.id,
+            mode=sink.mode,
+            row_count=len(frame),
+            writer=lambda staged: pq.write_table(
+                table, staged, version="2.6", compression="snappy", allow_truncated_timestamps=False
+            ),
+        )
