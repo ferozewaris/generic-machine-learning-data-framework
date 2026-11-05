@@ -74,9 +74,9 @@ def _check_input(value: object) -> None:
             size += len(chunk.encode("utf-8"))
             if size > MAX_CONFIG_BYTES:
                 raise ConfigError("document", "size_limit")
-    except (ValueError, UnicodeError) as exc:
-        if isinstance(exc, ConfigError):
-            raise
+    except ConfigError:
+        raise
+    except ValueError as exc:
         raise ConfigError("document", "invalid_json_value") from exc
 
 
@@ -256,8 +256,9 @@ def _validate_references(workflow: WorkflowSpec) -> None:
         for offset, name in enumerate(step.inputs):
             if name not in ids:
                 raise ConfigError(f"steps.{index}.inputs.{offset}", "unknown_dataset")
+    graph = {step.id: step.inputs for step in workflow.steps}
     try:
-        tuple(TopologicalSorter({step.id: step.inputs for step in workflow.steps}).static_order())
+        TopologicalSorter(graph).prepare()
     except CycleError as exc:
         index = next(i for i, step in enumerate(workflow.steps) if step.id in exc.args[1])
         raise ConfigError(f"steps.{index}.inputs", "dependency_cycle") from exc
