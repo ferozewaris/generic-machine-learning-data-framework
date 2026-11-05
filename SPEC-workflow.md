@@ -9,7 +9,7 @@ Depends on: data-io, processing, automl, model-lifecycle
 Execute one validated data-only, training, or inference workflow through the module contracts and report truthful stage and output status.
 
 The [confirmed intent](docs/intent/generic-data-ml-library.md) defines first-release scope; shared conventions are indexed in [CAPABILITY-MAP.md](CAPABILITY-MAP.md).
-This document defines desired behavior, not currently implemented functionality.
+Implementation status: T010 data-only provider coordination is verified locally; see [workflow behavior](docs/workflow.md). Train/infer, CLI integration, progress, cancellation and recovery remain pending. Requirements below retain the full agreed scope.
 
 ## Tech Stack
 
