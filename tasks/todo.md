@@ -185,7 +185,7 @@ python3 -m pytest tests/unit/core/test_config.py tests/contract/core/test_valida
 
 <a id="t005"></a>
 
-### [ ] T005: Define serializable run and artifact contracts
+### [x] T005: Define serializable run and artifact contracts
 
 **Description:** Deliver this core-contracts capability through the provider contracts, keeping previously completed paths working.
 
@@ -193,9 +193,9 @@ python3 -m pytest tests/unit/core/test_config.py tests/contract/core/test_valida
 
 **Acceptance criteria:**
 
-- [ ] DatasetRef, ArtifactRef, RunContext, TrainingResult, PredictionResult, and write/run receipts have explicit fields and stable JSON forms.
-- [ ] Opaque dataframe/model handles stay out of serialized manifests; preserve metric direction, resolved search/default versions, evaluated/refitted/returned model references, and fit-data cutoffs.
-- [ ] Errors carry safe codes/field paths, chained internal causes, and retry safety; terminal states include UTC timestamps.
+- [x] DatasetRef, ArtifactRef, RunContext, TrainingResult, PredictionResult, and write/run receipts have explicit fields and stable JSON forms.
+- [x] Opaque dataframe/model handles stay out of serialized manifests; preserve metric direction, resolved search/default versions, evaluated/refitted/returned model references, and fit-data cutoffs.
+- [x] Errors carry safe codes/field paths, chained internal causes, and retry safety; terminal states include UTC timestamps.
 
 **Verification:**
 
@@ -203,7 +203,7 @@ python3 -m pytest tests/unit/core/test_config.py tests/contract/core/test_valida
 python3 -m pytest tests/contract/core/test_types.py tests/unit/core/test_errors.py -q
 ```
 
-- [ ] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
+- [x] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
 
 **Dependencies:** T004
 
@@ -215,6 +215,8 @@ python3 -m pytest tests/contract/core/test_types.py tests/unit/core/test_errors.
 - `tests/unit/core/test_errors.py`
 
 **Estimated scope:** Medium (4 files).
+
+**Evidence (2026-11-05):** T005a safe errors; T005b metadata/evaluated-refit contracts; T005c context/run/write receipts. New contracts failed before implementation. Strict-version/URI and output-commit/event regressions reproduced and fixed. 47 new tests (133 total) pass, as do Ruff/format/build. Message, assessment-attribution and retry-uncertainty mutations were caught; restored source rechecked. Independent five-axis review found no remaining actionable issues. Simplification removed only a redundant refit comparison, separately verified. See docs/contracts.md. No backend execution/support is implied.
 
 <a id="t006"></a>
 

@@ -1,5 +1,6 @@
 """Versioned metadata contracts, independent of compute and model backends."""
 
+from collections.abc import Callable
 from datetime import datetime, timezone
 from typing import Annotated, Literal
 from urllib.parse import urlsplit
@@ -7,7 +8,7 @@ from urllib.parse import urlsplit
 from pydantic import AfterValidator, ConfigDict, Field, JsonValue, model_validator
 
 from gmldf.core.config import Engine, Name, Spec, Text
-from gmldf.core.errors import ErrorInfo
+from gmldf.core.errors import ErrorInfo, RetrySafety
 
 
 def _safe_uri(value: str) -> str:
@@ -140,3 +141,107 @@ class PredictionResult(Manifest):
     schema_version: SchemaVersion = 1
     model: ArtifactRef
     predictions: DatasetRef
+
+
+class RunIdentity(Manifest):
+    run_id: Name
+    attempt_id: Name
+    config_digest: Checksum
+    code_version: Text
+    environment: Annotated[dict[Text, Text], Field(min_length=1)]
+
+
+class RunEvent(Manifest):
+    stage_id: Name
+    event: Literal["started", "succeeded", "failed", "skipped", "cancelled", "committed"]
+    timestamp: UTCTime
+    error: ErrorInfo | None = None
+
+    @model_validator(mode="after")
+    def outcome(self):
+        if (self.event == "failed") != (self.error is not None):
+            raise ValueError("event_error_mismatch")
+        return self
+
+
+class RunContext(Manifest):
+    identity: RunIdentity
+    artifact_root: SafeURI
+    deadline: UTCTime | None = None
+    allowed_capabilities: list[Name] = Field(default_factory=list)
+    credential_resolver: Callable[[str], str] | None = Field(default=None, exclude=True, repr=False)
+    cancelled: Callable[[], bool] | None = Field(default=None, exclude=True, repr=False)
+    event_recorder: Callable[[RunEvent], None] | None = Field(
+        default=None, exclude=True, repr=False
+    )
+
+
+class WriteReceipt(Manifest):
+    output_id: Name
+    destination: SafeURI
+    mode: Literal["error_if_exists", "overwrite", "append", "upsert"]
+    commit_status: Literal["committed", "not_committed", "unknown"]
+    retry_safety: RetrySafety = "never"
+    row_count: Annotated[int, Field(ge=0)] | None = None
+    source_version: Text | None = None
+    commit_id: Text | None = None
+
+    @model_validator(mode="after")
+    def retry_uncertainty(self):
+        if self.commit_status == "unknown" and self.retry_safety == "safe":
+            raise ValueError("unknown_commit_cannot_be_retry_safe")
+        return self
+
+
+class StageRecord(Manifest):
+    stage_id: Name
+    status: Literal["succeeded", "failed", "skipped", "cancelled"]
+    started_at: UTCTime | None = None
+    finished_at: UTCTime
+    error: ErrorInfo | None = None
+
+    @model_validator(mode="after")
+    def outcome(self):
+        if self.status != "skipped" and self.started_at is None:
+            raise ValueError("stage_start_required")
+        if self.started_at is not None and self.finished_at < self.started_at:
+            raise ValueError("negative_duration")
+        if (self.status == "failed") != (self.error is not None):
+            raise ValueError("stage_error_mismatch")
+        return self
+
+
+class RunResult(Manifest):
+    schema_version: SchemaVersion = 1
+    identity: RunIdentity
+    status: Literal["pending", "running", "succeeded", "failed", "cancelled"]
+    started_at: UTCTime | None = None
+    finished_at: UTCTime | None = None
+    reason: Literal["completed", "failed", "cancelled"] | None = None
+    stages: list[StageRecord] = Field(default_factory=list)
+    trials: list[CandidateRecord] = Field(default_factory=list)
+    artifacts: list[ArtifactRef] = Field(default_factory=list)
+    writes: list[WriteReceipt] = Field(default_factory=list)
+    errors: list[ErrorInfo] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def outcome(self):
+        terminal = self.status in {"succeeded", "failed", "cancelled"}
+        if terminal:
+            if self.started_at is None or self.finished_at is None or self.reason is None:
+                raise ValueError("terminal_metadata_required")
+            expected = "completed" if self.status == "succeeded" else self.status
+            if self.reason != expected or self.finished_at < self.started_at:
+                raise ValueError("invalid_terminal_metadata")
+        elif self.finished_at is not None or self.reason is not None:
+            raise ValueError("nonterminal_metadata_conflict")
+        if self.status == "running" and self.started_at is None:
+            raise ValueError("run_start_required")
+        if (self.status == "failed") != bool(self.errors):
+            raise ValueError("run_error_mismatch")
+        if self.status == "succeeded" and (
+            any(stage.status != "succeeded" for stage in self.stages)
+            or any(write.commit_status != "committed" for write in self.writes)
+        ):
+            raise ValueError("incomplete_work_cannot_succeed")
+        return self

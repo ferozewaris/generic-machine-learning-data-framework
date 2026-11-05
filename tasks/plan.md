@@ -247,7 +247,7 @@ Further implementation follows the remaining dependencies. Publishing, provision
 - Scope: complete T005–T087 in dependency order (T080 optional), preserving T001–T004.
 - Baseline: clean `codex/library-core` at 16553d6; no applicable AGENTS.md found in repository or parent paths. Existing suite: 86 tests.
 - Checks: `.venv/bin/python -m pytest`, Ruff check/format, `build --no-isolation`, `git diff --check`. No type checker configured.
-- Current slice: T005b dataset/artifact/result contracts; next T005c context/run receipts. T005 remains incomplete until all criteria pass.
+- Current slice: T006a lazy credentials/safe diagnostics; next T006b capabilities and policy preflight. T005 completed with all criteria verified.
 - Workflow: focused RED/GREEN → five-axis review/mutation check → fix → simplify only when useful → recheck → atomic local commit. No push, merge, deploy, or provisioning.
 - Pending: T006 preflight, T087 explicit intent, T007 onward as ordered above. No later capability is claimed implemented.
 - External evidence: real Kubernetes/AWS/Databricks/Snowflake/database/cloud-service checks need existing authorized environments; continue independent local work. Optional T080 needs user data and is not required for release.
@@ -256,3 +256,5 @@ Further implementation follows the remaining dependencies. Publishing, provision
 
 - T005b: 22 reference/result tests, 114 total; missing contracts and five boundary failures reproduced RED. Assessment attribution mutation detected. Ruff/format/build pass. Review fixes: strict integer schema versions and absolute credential-free URIs. Re-review: no unresolved actionable findings.
 - Verification note: a restored same-size mutation briefly reused stale bytecode; source was correct, cache removed and focused/full suites passed. Later mutation runs clear affected bytecode explicitly.
+
+- T005 completed: 47 added tests /133 total, Ruff/format/build pass; all review findings fixed and re-reviewed. T005c preserves commit identity, safe terminal outcomes and UTC metadata. Retry-guard mutation caught. No further simplification justified. No configured type-check command exists.
