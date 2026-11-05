@@ -27,6 +27,17 @@ MESSAGES = {
 }
 
 
+class DependencyHint(BaseModel):
+    model_config = ConfigDict(strict=True, extra="forbid", frozen=True, hide_input_in_errors=True)
+
+    package: Annotated[str, Field(pattern=r"^[A-Za-z][A-Za-z0-9_.-]*$", max_length=128)]
+    expected_version: Annotated[
+        str, Field(pattern=r"^[A-Za-z0-9][A-Za-z0-9.+!_-]*$", max_length=128)
+    ]
+    install_extra: Annotated[str, Field(pattern=r"^[A-Za-z][A-Za-z0-9_-]*$", max_length=128)]
+    reason: Literal["missing", "version_mismatch"]
+
+
 class ErrorInfo(BaseModel):
     model_config = ConfigDict(strict=True, extra="forbid", frozen=True, hide_input_in_errors=True)
 
@@ -37,6 +48,7 @@ class ErrorInfo(BaseModel):
         None
     )
     retry_safety: RetrySafety = "never"
+    dependency: DependencyHint | None = Field(default=None, exclude_if=lambda value: value is None)
 
     @model_validator(mode="before")
     @classmethod
@@ -61,6 +73,13 @@ class FrameworkError(Exception):
         path: str | None = None,
         stage_id: str | None = None,
         retry_safety: RetrySafety = "never",
+        dependency: DependencyHint | dict[str, str] | None = None,
     ):
-        self.error = ErrorInfo(code=code, path=path, stage_id=stage_id, retry_safety=retry_safety)
+        self.error = ErrorInfo(
+            code=code,
+            path=path,
+            stage_id=stage_id,
+            retry_safety=retry_safety,
+            dependency=dependency,
+        )
         super().__init__(f"{self.error.code}: {self.error.message}")

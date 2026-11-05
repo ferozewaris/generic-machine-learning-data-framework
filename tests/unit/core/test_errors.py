@@ -41,3 +41,29 @@ def test_public_error_omits_internal_cause_and_uses_stable_message():
 def test_error_boundary_rejects_uncontrolled_public_fields(values):
     with pytest.raises(ValidationError):
         ErrorInfo(**values)
+
+
+def test_optional_dependency_failure_has_safe_actionable_install_details():
+    error = FrameworkError(
+        "CAPABILITY_UNSUPPORTED",
+        dependency={
+            "package": "pandas",
+            "expected_version": "3.0.0",
+            "install_extra": "pandas",
+            "reason": "missing",
+        },
+    )
+    public = error.error.model_dump(mode="json")
+    assert public["dependency"]["install_extra"] == "pandas"
+    assert public["dependency"]["package"] == "pandas"
+    assert ErrorInfo.model_validate_json(error.error.model_dump_json()) == error.error
+    with pytest.raises(ValidationError):
+        FrameworkError(
+            "CAPABILITY_UNSUPPORTED",
+            dependency={
+                "package": "https://user:password@host",
+                "expected_version": "3.0.0",
+                "install_extra": "pandas",
+                "reason": "missing",
+            },
+        )

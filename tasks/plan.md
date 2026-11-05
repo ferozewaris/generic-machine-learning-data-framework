@@ -262,3 +262,5 @@ Further implementation follows the remaining dependencies. Publishing, provision
 - T006a in progress: 15 focused tests pass; review found URI forms without authority and aggregate diagnostic size leakage/overrun. Reproduced failures and fixed URI parsing and aggregate budget; re-review passed with no remaining actionable findings. Lazy wrappers/public_error tests cover sentinel values and internal causes.
 
 - T006a complete slice (T006 still pending preflight):148 full-suite tests, Ruff/format/build pass; sensitive-key mutation detected5 failures and restored/rechecked. No simplification clearly improves the scoped code.
+
+- T006b dependency-diagnostic slice: optional validated package/version/extra/reason metadata; missing API reproduced RED,7 error tests/149 total pass. Five-axis self-review: no actionable findings; no simplification justified. Ruff/format/build pass. T006c preflight is next (T006 not yet complete).
