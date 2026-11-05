@@ -59,7 +59,7 @@ python3 -m gmldf run --config examples/classification/workflow.yaml --profile lo
 python3 -m pytest tests/unit/execution tests/contract/execution -q
 python3 -m pytest tests/integration/execution -m integration -q
 ```
-No package has been published and these target commands are not runnable today.
+No package has been published. T011 implements the local data-only `run` command; see [current CLI behavior](docs/local-execution.md). Other task/backend/host examples remain pending.
 
 ## Project Structure
 

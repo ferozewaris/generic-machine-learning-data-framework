@@ -27,4 +27,4 @@ Sources execute in configuration order, steps in dependency order, then outputs 
 
 Every output is mandatory. Success requires every stage and output to succeed. Completed receipts remain recorded when another output fails; outputs are independent commits. Both successful returns and `gmldf.data_io.base.WriteFailure` receipts must match the requested output ID and mode. An uncertain or uncommitted receipt makes the run fail. No automatic retry or resume occurs.
 
-The caller currently supplies absolute paths, run identity, configuration digest and runtime metadata. CLI path resolution and persisted run-ID reuse protection are T011; progress events, cancellation/deadlines and recovery remain separate backlog tasks. Do not treat this runner as implementing those pending contracts.
+Direct workflow callers supply absolute paths, run identity, configuration digest and runtime metadata. [Local execution](local-execution.md) supplies config-relative path resolution, identity and exclusive run metadata. Stage progress events, cancellation/deadlines and recovery remain separate backlog tasks. Do not treat this runner as implementing those pending contracts.
