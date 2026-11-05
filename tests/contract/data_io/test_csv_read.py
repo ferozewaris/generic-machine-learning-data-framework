@@ -163,7 +163,14 @@ def test_nonregular_path_is_rejected_before_open(tmp_path, context, monkeypatch)
 
 @pytest.mark.parametrize(
     ("dtype", "value"),
-    [("float64", "inf"), ("decimal", "Infinity"), ("boolean", "maybe"), ("int64", "1.5")],
+    [
+        ("float64", "inf"),
+        ("float64", "NaN"),
+        ("float64", "nan"),
+        ("decimal", "Infinity"),
+        ("boolean", "maybe"),
+        ("int64", "1.5"),
+    ],
 )
 def test_invalid_or_nonfinite_declared_values_never_silently_coerce(
     tmp_path, context, dtype, value
