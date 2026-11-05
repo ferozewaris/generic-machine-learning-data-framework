@@ -9,16 +9,7 @@ from typing import Literal
 
 from gmldf.core.errors import FrameworkError
 from gmldf.core.types import WriteReceipt
-
-
-class WriteFailure(FrameworkError):
-    def __init__(self, receipt: WriteReceipt):
-        self.receipt = receipt
-        super().__init__(
-            "OUTPUT_INCOMPLETE",
-            path=f"outputs.{receipt.output_id}",
-            retry_safety=receipt.retry_safety,
-        )
+from gmldf.data_io.base import WriteFailure
 
 
 def publish(
