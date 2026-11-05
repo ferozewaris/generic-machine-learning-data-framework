@@ -247,7 +247,7 @@ Further implementation follows the remaining dependencies. Publishing, provision
 - Scope: complete T005–T087 in dependency order (T080 optional), preserving T001–T004.
 - Baseline: clean `codex/library-core` at 16553d6; no applicable AGENTS.md found in repository or parent paths. Existing suite: 86 tests.
 - Checks: `.venv/bin/python -m pytest`, Ruff check/format, `build --no-isolation`, `git diff --check`. No type checker configured.
-- Current slice: T006a lazy credentials/safe diagnostics; next T006b capabilities and policy preflight. T005 completed with all criteria verified.
+- Current slice: T087 explicit ML intent. T005–T006 completed with acceptance evidence; T007 follows T087.
 - Workflow: focused RED/GREEN → five-axis review/mutation check → fix → simplify only when useful → recheck → atomic local commit. No push, merge, deploy, or provisioning.
 - Pending: T006 preflight, T087 explicit intent, T007 onward as ordered above. No later capability is claimed implemented.
 - External evidence: real Kubernetes/AWS/Databricks/Snowflake/database/cloud-service checks need existing authorized environments; continue independent local work. Optional T080 needs user data and is not required for release.
@@ -264,3 +264,5 @@ Further implementation follows the remaining dependencies. Publishing, provision
 - T006a complete slice (T006 still pending preflight):148 full-suite tests, Ruff/format/build pass; sensitive-key mutation detected5 failures and restored/rechecked. No simplification clearly improves the scoped code.
 
 - T006b dependency-diagnostic slice: optional validated package/version/extra/reason metadata; missing API reproduced RED,7 error tests/149 total pass. Five-axis self-review: no actionable findings; no simplification justified. Ruff/format/build pass. T006c preflight is next (T006 not yet complete).
+
+- T006c complete:17 preflight cases/166 total pass; planned/verified/unsupported, exact version remedies, policy-before-access, formats, transfers and prediction provenance covered. Nine failures detected by status-guard mutation; restored and full suite rechecked. Independent re-review: no actionable findings. Ruff/format/build pass; no further simplification justified.
