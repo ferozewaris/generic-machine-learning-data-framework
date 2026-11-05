@@ -137,7 +137,7 @@ python3 -m pytest tests/unit/test_install.py -q
 
 - [x] Required tasks in this group meet their criteria; incomplete live evidence remains visible. Optional work is not counted as a release blocker.
 - [x] Applicable focused/regression tests, build, lint, and formatting pass for implemented environments; no weakening or placeholder support.
-- [ ] Review milestone evidence and dependencies before proceeding; intermediate examples do not constitute release completion.
+- [x] Review milestone evidence and dependencies before proceeding; intermediate examples do not constitute release completion.
 
 
 ## Stage 02: T004, T005, T006
@@ -220,7 +220,7 @@ python3 -m pytest tests/contract/core/test_types.py tests/unit/core/test_errors.
 
 <a id="t006"></a>
 
-### [ ] T006: Reject unsupported or denied work before access
+### [x] T006: Reject unsupported or denied work before access
 
 **Description:** Deliver this core-contracts capability through the provider contracts, keeping previously completed paths working.
 
@@ -228,9 +228,9 @@ python3 -m pytest tests/contract/core/test_types.py tests/unit/core/test_errors.
 
 **Acceptance criteria:**
 
-- [ ] Unknown/unsupported combinations and denied source/operation/output/runtime policies fail before any provider access.
-- [ ] Lazy credential references resolve only at access time; secrets in URLs, context, and exception chains are absent from public output.
-- [ ] Capability statuses distinguish planned, verified, and unsupported; missing optional dependencies give actionable errors.
+- [x] Unknown/unsupported combinations and denied source/operation/output/runtime policies fail before any provider access.
+- [x] Lazy credential references resolve only at access time; secrets in URLs, context, and exception chains are absent from public output.
+- [x] Capability statuses distinguish planned, verified, and unsupported; missing optional dependencies give actionable errors.
 
 **Verification:**
 
@@ -238,7 +238,7 @@ python3 -m pytest tests/contract/core/test_types.py tests/unit/core/test_errors.
 python3 -m pytest tests/unit/core/test_preflight.py tests/unit/core/test_secrets.py -q
 ```
 
-- [ ] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
+- [x] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
 
 **Dependencies:** T005
 
@@ -252,11 +252,13 @@ python3 -m pytest tests/unit/core/test_preflight.py tests/unit/core/test_secrets
 
 **Estimated scope:** Medium (5 files).
 
+**Evidence (2026-11-05):** T006a lazy credentials/public diagnostics; T006b controlled dependency remedies; T006c exact capability and policy preflight. 33 added tests (166 total) pass. Missing modules/APIs and review regressions failed RED before fixes. Review fixed URI leakage/aggregate bounds, full operation policy coverage, format/transfer routes and prediction output provenance. Re-review has no actionable findings. Redaction/status mutations caught; source restored and checks rerun. Ruff/format/build pass. Registry fakes establish semantics only; no backend/platform support is claimed from them.
+
 ### Checkpoint C02: After T004, T005, T006
 
-- [ ] Required tasks in this group meet their criteria; incomplete live evidence remains visible. Optional work is not counted as a release blocker.
-- [ ] Applicable focused/regression tests, build, lint, and formatting pass for implemented environments; no weakening or placeholder support.
-- [ ] Review milestone evidence and dependencies before proceeding; intermediate examples do not constitute release completion.
+- [x] Required tasks in this group meet their criteria; incomplete live evidence remains visible. Optional work is not counted as a release blocker.
+- [x] Applicable focused/regression tests, build, lint, and formatting pass for implemented environments; no weakening or placeholder support.
+- [x] Review milestone evidence and dependencies before proceeding; intermediate examples do not constitute release completion.
 
 
 ## Stage 03: T087, T007, T008
