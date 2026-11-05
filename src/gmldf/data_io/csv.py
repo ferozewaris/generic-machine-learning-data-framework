@@ -11,9 +11,10 @@ from urllib.parse import unquote, urlsplit
 from pydantic import Field, ValidationError
 
 from gmldf.core.capabilities import Capability, CapabilityRegistry, CapabilityRequest
-from gmldf.core.config import ConfigError, SourceSpec, Spec, Text
+from gmldf.core.config import ConfigError, OutputSpec, SourceSpec, Spec, Text
 from gmldf.core.errors import FrameworkError
-from gmldf.core.types import ColumnSpec, DatasetRef, RunContext
+from gmldf.core.types import ColumnSpec, DatasetRef, RunContext, WriteReceipt
+from gmldf.data_io.local_publish import publish
 
 CSV_READ = Capability(
     id="pandas_csv_read",
@@ -166,6 +167,7 @@ class PandasCSVReader:
                 frame = pd.read_csv(
                     stream,
                     sep=options.delimiter,
+                    engine="c" if len(options.delimiter.encode("utf-8")) == 1 else "python",
                     dtype="string",
                     keep_default_na=False,
                     na_values=options.null_values,
@@ -192,3 +194,122 @@ class PandasCSVReader:
             source_version=None,
             row_count=len(frame),
         ).with_handle(frame)
+
+
+class CSVWriteOptions(Spec):
+    encoding: Text
+    delimiter: Annotated[str, Field(min_length=1, max_length=1)]
+    null_value: str
+    date_formats: dict[str, Text] = Field(default_factory=dict)
+    decimal: Literal[".", ","] = "."
+
+
+def _render(frame, columns, options):
+    import numpy as np
+    import pandas as pd
+
+    rendered = frame.copy()
+    for column in columns:
+        name, dtype = column.name, column.dtype
+        series = frame[name]
+        if dtype == "boolean":
+
+            def boolean(value):
+                if pd.isna(value):
+                    return None
+                if not isinstance(value, (bool, np.bool_)):
+                    raise ValueError("invalid_boolean")
+                return "true" if value else "false"
+
+            rendered[name] = series.map(boolean)
+        elif dtype == "decimal":
+
+            def decimal(value):
+                if pd.isna(value):
+                    return None
+                if not isinstance(value, Decimal) or not value.is_finite():
+                    raise ValueError("invalid_decimal")
+                return str(value).replace(".", options.decimal)
+
+            rendered[name] = series.map(decimal)
+        elif dtype in {"date", "timestamp"}:
+            if dtype == "date" and not series.dropna().eq(series.dropna().dt.normalize()).all():
+                raise ValueError("non_midnight_date")
+            rendered[name] = series.dt.strftime(options.date_formats[name])
+        elif dtype in {"int64", "float64"}:
+            numeric = series.astype("Int64" if dtype == "int64" else "Float64")
+            if not numeric.dropna().map(math.isfinite).all():
+                raise ValueError("nonfinite_number")
+            rendered[name] = numeric.astype("string").str.replace(".", options.decimal, regex=False)
+        else:
+            rendered[name] = series.astype("string")
+    rendered = rendered.astype("string")
+    if rendered.eq(options.null_value).any().any():
+        raise ValueError("null_token_collision")
+    return rendered
+
+
+class PandasCSVWriter:
+    capabilities = tuple(
+        CSV_READ.model_copy(
+            update={
+                "id": f"pandas_csv_write_{suffix}",
+                "operation": "write",
+                "mode": mode,
+            }
+        )
+        for suffix, mode in (("new", "error_if_exists"), ("overwrite", "overwrite"))
+    )
+
+    def write(self, dataset: DatasetRef, sink: OutputSpec, context: RunContext) -> WriteReceipt:
+        prefix = f"outputs.{sink.id}"
+        request = CapabilityRequest(
+            operation="write",
+            engine=dataset.engine,
+            profile="local",
+            connector=sink.connector,
+            format=sink.format or "csv",
+            mode=sink.mode,
+        )
+        CapabilityRegistry(self.capabilities).require(
+            request, allowed=context.allowed_capabilities, path=f"{prefix}.mode"
+        )
+        try:
+            options = CSVWriteOptions.model_validate(sink.options)
+        except ValidationError as cause:
+            field = cause.errors(include_input=False, include_context=False)[0]["loc"][0]
+            suffix = f".{field}" if field in CSVWriteOptions.model_fields else ""
+            raise ConfigError(f"{prefix}.options{suffix}", "invalid_csv_options") from cause
+        _validate_framing(options.encoding, options.delimiter, prefix)
+        path = _local_path(sink.location, prefix)
+        dates = {column.name for column in dataset.columns if column.dtype in {"date", "timestamp"}}
+        if set(options.date_formats) != dates:
+            raise ConfigError(f"{prefix}.options.date_formats", "date_formats_required")
+        if not dataset.columns or any(
+            column.dtype not in COLUMN_TYPES for column in dataset.columns
+        ):
+            raise ConfigError(f"{prefix}.columns", "explicit_supported_types_required")
+        import pandas as pd
+
+        if not isinstance(dataset.handle, pd.DataFrame):
+            raise FrameworkError("DATA_INVALID", path="dataset.handle")
+        if list(dataset.handle.columns) != [column.name for column in dataset.columns]:
+            raise FrameworkError("DATA_INVALID", path="dataset.columns")
+        try:
+            rendered = _render(dataset.handle, dataset.columns, options)
+        except Exception as cause:
+            raise FrameworkError("DATA_INVALID", path=f"{prefix}.columns") from cause
+        return publish(
+            path,
+            output_id=sink.id,
+            mode=sink.mode,
+            row_count=len(rendered),
+            writer=lambda staged: rendered.to_csv(
+                staged,
+                index=False,
+                encoding=options.encoding,
+                sep=options.delimiter,
+                na_rep=options.null_value,
+                lineterminator="\n",
+            ),
+        )
