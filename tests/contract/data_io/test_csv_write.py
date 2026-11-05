@@ -275,3 +275,27 @@ def test_numeric_and_utc_timestamp_values_roundtrip_with_explicit_formats(tmp_pa
     assert restored["f"].iloc[0] == 1.25
     assert restored["when"].iloc[0] == frame["when"].iloc[0]
     assert restored.iloc[1].isna().all()
+
+
+@pytest.mark.parametrize("storage", ["python", "pyarrow"])
+def test_writer_does_not_convert_nan_text_into_null(tmp_path, context, storage):
+    from gmldf.core.types import ColumnSpec, DatasetRef
+
+    frame = pd.DataFrame({"x": pd.Series(["NaN"], dtype=pd.StringDtype(storage=storage))})
+    dataset = DatasetRef(
+        id="data",
+        engine="pandas",
+        materialization="memory",
+        columns=[ColumnSpec(name="x", dtype="float64")],
+    ).with_handle(frame)
+    output = OutputSpec(
+        id="out",
+        dataset="data",
+        connector="csv",
+        location=str(tmp_path / "out.csv"),
+        options={"encoding": "utf-8", "delimiter": ",", "null_value": "NULL"},
+    )
+    with pytest.raises(FrameworkError) as caught:
+        PandasCSVWriter().write(dataset, output, context)
+    assert caught.value.error.code == "DATA_INVALID"
+    assert not (tmp_path / "out.csv").exists()

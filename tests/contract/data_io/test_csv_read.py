@@ -256,3 +256,14 @@ def test_importing_reader_does_not_import_optional_dataframe_backend():
         text=True,
     )
     assert completed.returncode == 0, completed.stderr
+
+
+@pytest.mark.parametrize("storage", ["python", "pyarrow"])
+def test_csv_numeric_nan_rejection_is_independent_of_string_storage(tmp_path, context, storage):
+    import pandas as pd
+
+    path = tmp_path / "nan.csv"
+    path.write_text("x\nNaN\n")
+    with pd.option_context("mode.string_storage", storage), pytest.raises(FrameworkError) as caught:
+        PandasCSVReader().read(source(path, {"x": "float64"}), context)
+    assert caught.value.error.code == "DATA_INVALID"

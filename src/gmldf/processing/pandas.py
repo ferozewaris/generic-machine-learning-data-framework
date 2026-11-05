@@ -46,7 +46,9 @@ def _cast(frame, params):
             result[name] = series.astype("string")
         elif dtype in {"int64", "float64"}:
             numeric = series.astype("Int64" if dtype == "int64" else "Float64")
-            if not numeric.dropna().map(math.isfinite).all():
+            if (numeric.isna() & series.notna()).any() or not numeric.dropna().map(
+                math.isfinite
+            ).all():
                 raise ValueError("nonfinite_numeric_cast")
             result[name] = numeric
         else:

@@ -63,7 +63,7 @@ def _cast(series, dtype, options):
         result = series.str.replace(options.decimal, ".", regex=False).astype(
             "Int64" if dtype == "int64" else "Float64"
         )
-        if not result.dropna().map(math.isfinite).all():
+        if (result.isna() & series.notna()).any() or not result.dropna().map(math.isfinite).all():
             raise ValueError("nonfinite_number")
         return result
     if dtype == "boolean":
@@ -225,7 +225,9 @@ def _render(frame, columns, options):
             rendered[name] = series.dt.strftime(options.date_formats[name])
         elif dtype in {"int64", "float64"}:
             numeric = series.astype("Int64" if dtype == "int64" else "Float64")
-            if not numeric.dropna().map(math.isfinite).all():
+            if (numeric.isna() & series.notna()).any() or not numeric.dropna().map(
+                math.isfinite
+            ).all():
                 raise ValueError("nonfinite_number")
             rendered[name] = numeric.astype("string").str.replace(".", options.decimal, regex=False)
         else:

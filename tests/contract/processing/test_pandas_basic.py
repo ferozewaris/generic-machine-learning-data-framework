@@ -241,3 +241,14 @@ def test_step_validation_accepts_data_dependent_columns_and_enforces_policy(cont
     with pytest.raises(FrameworkError) as caught:
         PandasEngine().validate_step(step, context.model_copy(update={"allowed_capabilities": []}))
     assert caught.value.error.code == "POLICY_DENIED"
+
+
+@pytest.mark.parametrize("storage", ["python", "pyarrow"])
+def test_numeric_cast_cannot_turn_nonnull_nan_text_into_null(context, storage):
+    step = StepSpec(
+        id="typed", operation="cast", inputs=["raw"], params={"columns": {"x": "float64"}}
+    )
+    frame = pd.DataFrame({"x": pd.Series(["NaN"], dtype=pd.StringDtype(storage=storage))})
+    with pytest.raises(FrameworkError) as caught:
+        PandasEngine().transform(dataset(frame), [step], context)
+    assert caught.value.error.code == "DATA_INVALID"
