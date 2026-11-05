@@ -14,7 +14,8 @@ This table distinguishes profiles to test from verified behavior. Only an execut
 | Local Parquet / PyArrow26.0.1 / pinned pandas profile | Verified | T013:26 nativeParquet cases,4 format permutations, missing-extra rejection in a clean CSV-only pip install |
 | pandas select/cast/sort / pinned local pandas profile | Verified | T008:23 real pandas contract tests, stable ordering, strict casts, native handles and untouched inputs |
 | Further pandas/Spark/Polars/DuckDB processing | Planned | T034–T045 |
-| All four tasks and requested ML integrations | Planned | T014–T024, T046–T056 |
+| Forecast data/temporal holdout validation / pinned local pandas profile | Verified | T014:27 tests;731 synthetic daily rows, exact675/28/28 windows, alternate frequency/columns |
+| All four task fits and requested ML integrations | Planned | T015–T024, T046–T056 |
 | Cloud/database/catalog connectors and Delta outputs | Planned | T059–T072 |
 | MLflow lifecycle | Planned | T057–T058 |
 | User-launched container/Kubernetes invocation | Planned | T028, T032 |
@@ -26,4 +27,4 @@ See [host-profile requirements](decisions/host-compatibility.md) and the [comple
 
 Tested core dependency versions: Pydantic 2.14.3, pydantic-core 2.50.4, PyYAML 6.0.3. This evidence does not verify any processing engine, connector, model, external host, or public PyPI installation.
 
-Tested local CSV optional profile: pandas3.1.1, NumPy2.4.6, python-dateutil4.0.0, tzdata2026.6. These exact versions are pinned in `.[pandas]` and checked by its local reader declaration. Total current suite:356 tests. Local data coordination, CLI and clean-install CSV recipe are verified; Parquet is additionally verified with PyArrow26.0.1; cancellation/recovery and remote hosts remain pending.
+Tested local CSV optional profile: pandas3.1.1, NumPy2.4.6, python-dateutil4.0.0, tzdata2026.6. These exact versions are pinned in `.[pandas]` and checked by its local reader declaration. Total current suite:383 tests. Local data coordination, CLI and clean-install CSV recipe are verified; Parquet is additionally verified with PyArrow26.0.1; cancellation/recovery and remote hosts remain pending.

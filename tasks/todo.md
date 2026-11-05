@@ -480,9 +480,9 @@ python3 -m pytest tests/contract/execution/test_local_cli.py -q
 
 ### Checkpoint C04: After T009, T010, T011
 
-- [ ] Required tasks in this group meet their criteria; incomplete live evidence remains visible. Optional work is not counted as a release blocker.
-- [ ] Applicable focused/regression tests, build, lint, and formatting pass for implemented environments; no weakening or placeholder support.
-- [ ] Review milestone evidence and dependencies before proceeding; intermediate examples do not constitute release completion.
+- [x] Required tasks in this group meet their criteria; incomplete live evidence remains visible. Optional work is not counted as a release blocker.
+- [x] Applicable focused/regression tests, build, lint, and formatting pass for implemented environments; no weakening or placeholder support.
+- [x] Review milestone evidence and dependencies before proceeding; intermediate examples do not constitute release completion.
 
 
 ## Stage 05: T012, T013, T014
@@ -559,7 +559,7 @@ python3 -m pytest tests/contract/data_io/test_parquet.py tests/e2e/test_data_for
 
 <a id="t014"></a>
 
-### [ ] T014: Validate one forecasting acceptance fixture
+### [x] T014: Validate one forecasting acceptance fixture
 
 **Description:** Create a synthetic temporal case that exercises the generic forecasting contract without defining library-wide defaults.
 
@@ -567,9 +567,9 @@ python3 -m pytest tests/contract/data_io/test_parquet.py tests/e2e/test_data_for
 
 **Acceptance criteria:**
 
-- [ ] Deterministic synthetic daily data matches the approved date range/cutoffs and contains no copied/customer data.
-- [ ] Duplicate/missing dates, non-finite targets, invalid frequency, and nonpositive horizons fail explicitly.
-- [ ] Time ordering, validation/test windows, and origin dates are verified from known expected records.
+- [x] Deterministic synthetic daily data matches the approved date range/cutoffs and contains no copied/customer data.
+- [x] Duplicate/missing dates, non-finite targets, invalid frequency, and nonpositive horizons fail explicitly.
+- [x] Time ordering, validation/test windows, and origin dates are verified from known expected records.
 
 **Verification:**
 
@@ -577,7 +577,7 @@ python3 -m pytest tests/contract/data_io/test_parquet.py tests/e2e/test_data_for
 python3 -m pytest tests/unit/automl/test_forecast_data.py -q
 ```
 
-- [ ] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
+- [x] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
 
 **Dependencies:** T013
 
@@ -590,11 +590,13 @@ python3 -m pytest tests/unit/automl/test_forecast_data.py -q
 
 **Estimated scope:** Medium (4 files).
 
+**Evidence:**27 forecastdata tests/383 full tests and required checks pass. Deterministic731-row syntheticfixture,675/28/28 windows and alternate2hour/customcolumncase verified. Missingmodule and3 boundaryfailures reproduced/fixed; complete-gridmutation detected; independentreviewclean. See docs/forecasting-fixture.md; fitting remains T015 onward.
+
 ### Checkpoint C05: After T012, T013, T014
 
-- [ ] Required tasks in this group meet their criteria; incomplete live evidence remains visible. Optional work is not counted as a release blocker.
-- [ ] Applicable focused/regression tests, build, lint, and formatting pass for implemented environments; no weakening or placeholder support.
-- [ ] Review milestone evidence and dependencies before proceeding; intermediate examples do not constitute release completion.
+- [x] Required tasks in this group meet their criteria; incomplete live evidence remains visible. Optional work is not counted as a release blocker.
+- [x] Applicable focused/regression tests, build, lint, and formatting pass for implemented environments; no weakening or placeholder support.
+- [x] Review milestone evidence and dependencies before proceeding; intermediate examples do not constitute release completion.
 
 
 ## Stage 06: T015, T016, T086
