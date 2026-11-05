@@ -1,6 +1,6 @@
 # Task List: Generic Data and Machine Learning Library
 
-Status: Revised to the user-confirmed intent on 2026-11-05. No implementation tasks are complete.
+Status: Revised to the user-confirmed intent on 2026-11-05. Implementation has started; completed tasks include evidence below.
 Intent: [confirmed intent](../docs/intent/generic-data-ml-library.md). Plan: [plan.md](plan.md).
 
 ## First-release completion rule
@@ -24,7 +24,7 @@ The library runs through Python/CLI in the user's host. It does not provision in
 
 <a id="t001"></a>
 
-### [ ] T001: Record remaining implementation defaults
+### [x] T001: Record remaining implementation defaults
 
 **Description:** Carry the confirmed product decisions into engineering defaults without reopening release scope.
 
@@ -32,9 +32,9 @@ The library runs through Python/CLI in the user's host. It does not provision in
 
 **Acceptance criteria:**
 
-- [ ] Reference the confirmed intent and record package name, Python range, schema library, and input limits as implementation decisions.
-- [ ] Document that every named connector/engine/task is first-release scope; fixtures, metrics, horizons, and budgets are configurable examples, not product defaults.
-- [ ] Keep unresolved dependency/host details explicit without blocking independent tasks or silently approving untested support.
+- [x] Reference the confirmed intent and record package name, Python range, schema library, and input limits as implementation decisions.
+- [x] Document that every named connector/engine/task is first-release scope; fixtures, metrics, horizons, and budgets are configurable examples, not product defaults.
+- [x] Keep unresolved dependency/host details explicit without blocking independent tasks or silently approving untested support.
 
 **Verification:**
 
@@ -42,7 +42,7 @@ The library runs through Python/CLI in the user's host. It does not provision in
 git diff --check
 ```
 
-- [ ] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
+- [x] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
 
 **Gate:** Product intent is confirmed. Only unresolved technical choices need resolution before their implementation; routine choices can be proposed with rationale.
 
@@ -56,9 +56,12 @@ git diff --check
 
 **Estimated scope:** Medium (3 files).
 
+**Evidence (2026-11-05):** Recorded package/Python/schema/limit choices in docs/decisions/library-contract.md; first-release scope unchanged.
+
+
 <a id="t002"></a>
 
-### [ ] T002: Bound installation and host compatibility
+### [x] T002: Bound installation and host compatibility
 
 **Description:** Define tested invocation profiles for the user's hosts without selecting an orchestration service.
 
@@ -66,9 +69,9 @@ git diff --check
 
 **Acceptance criteria:**
 
-- [ ] Define Python/dependency/CPU/driver/session profiles to test locally, inside containers/Kubernetes, AWS-hosted environments, Databricks, and Snowflake.
-- [ ] Separate platform connectors from execution inside a platform, declaring actual compatible engine/task pairs and unsupported modes.
-- [ ] Record existing identity/network/storage and test prerequisites; no EKS/ECS/Batch/SageMaker choice or remote-job API is required.
+- [x] Define Python/dependency/CPU/driver/session profiles to test locally, inside containers/Kubernetes, AWS-hosted environments, Databricks, and Snowflake.
+- [x] Separate platform connectors from execution inside a platform, declaring actual compatible engine/task pairs and unsupported modes.
+- [x] Record existing identity/network/storage and test prerequisites; no EKS/ECS/Batch/SageMaker choice or remote-job API is required.
 
 **Verification:**
 
@@ -76,7 +79,7 @@ git diff --check
 git diff --check
 ```
 
-- [ ] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
+- [x] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
 
 **Gate:** Environment-specific verification requires actual available authorized hosts; no provisioning is included.
 
@@ -90,9 +93,12 @@ git diff --check
 
 **Estimated scope:** Medium (3 files).
 
+**Evidence (2026-11-05):** Recorded all required host profiles and prerequisites in docs/decisions/host-compatibility.md; external live evidence remains planned.
+
+
 <a id="t003"></a>
 
-### [ ] T003: Create an installable minimal package
+### [x] T003: Create an installable minimal package
 
 **Description:** Select and pin the minimal development/core dependencies; do not install all optional backends.
 
@@ -100,9 +106,9 @@ git diff --check
 
 **Acceptance criteria:**
 
-- [ ] Editable base install and wheel build work with the confirmed Python target.
-- [ ] Base import requires no pandas, Spark, MLflow, or cloud SDK; optional extras are documented.
-- [ ] pytest/Ruff/build tooling and pytest integration markers are configured without adding CI or a service.
+- [x] Editable base install and wheel build work with the confirmed Python target.
+- [x] Base import requires no pandas, Spark, MLflow, or cloud SDK; optional extras are documented.
+- [x] pytest/Ruff/build tooling and pytest integration markers are configured without adding CI or a service.
 
 **Verification:**
 
@@ -110,7 +116,7 @@ git diff --check
 python3 -m pytest tests/unit/test_install.py -q
 ```
 
-- [ ] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
+- [x] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
 
 **Dependencies:** T001
 
@@ -123,6 +129,9 @@ python3 -m pytest tests/unit/test_install.py -q
 - `docs/development.md`
 
 **Estimated scope:** Medium (5 files).
+
+**Evidence (2026-11-05):** RED: installation test failed before the package existed. GREEN: isolated editable install, pytest, Ruff, and source/wheel build passed on CPython 3.11.18 macOS arm64. Tested core: Pydantic 2.14.3 and PyYAML 6.0.3; dev: pytest 9.2.0, Ruff 0.17.3, build 1.6.1, Hatchling 1.33.0.
+
 
 ### Checkpoint C01: After T001, T002, T003
 
