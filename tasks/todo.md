@@ -412,7 +412,7 @@ python3 -m pytest tests/contract/data_io/test_csv_write.py tests/unit/data_io/te
 
 <a id="t010"></a>
 
-### [ ] T010: Run a data-only workflow through providers
+### [x] T010: Run a data-only workflow through providers
 
 **Description:** Deliver this workflow capability through the provider contracts, keeping previously completed paths working.
 
@@ -420,9 +420,9 @@ python3 -m pytest tests/contract/data_io/test_csv_write.py tests/unit/data_io/te
 
 **Acceptance criteria:**
 
-- [ ] A validated data config executes source → steps → output in dependency order using provider-owned interfaces.
-- [ ] Failed dependencies skip consumers and retain completed receipts; required output failure makes the run fail.
-- [ ] Data-only execution imports no AutoML library; workflow never imports runtime implementations.
+- [x] A validated data config executes source → steps → output in dependency order using provider-owned interfaces.
+- [x] Failed dependencies skip consumers and retain completed receipts; required output failure makes the run fail.
+- [x] Data-only execution imports no AutoML library; workflow never imports runtime implementations.
 
 **Verification:**
 
@@ -430,7 +430,7 @@ python3 -m pytest tests/contract/data_io/test_csv_write.py tests/unit/data_io/te
 python3 -m pytest tests/contract/workflow/test_data_run.py -q
 ```
 
-- [ ] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
+- [x] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
 
 **Dependencies:** T008, T009
 
@@ -441,6 +441,8 @@ python3 -m pytest tests/contract/workflow/test_data_run.py -q
 - `tests/contract/workflow/test_data_run.py`
 
 **Estimated scope:** Medium (3 files).
+
+**Evidence:**20 workflow contracts and299 full-suite tests pass on the pinned local profile; Ruff/format/build pass. Receipt attribution finding reproduced/fixed/re-reviewed; dependency-skip mutation detected. See docs/workflow.md. No train/infer, cancellation, recovery or external compatibility claim.
 
 <a id="t011"></a>
 
