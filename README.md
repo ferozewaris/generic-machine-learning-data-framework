@@ -9,7 +9,7 @@ A planned pip-installable, configuration-driven Python library for data processi
 - Explicit size-limited cross-engine transfers and optional full-data refit with preserved evaluation evidence.
 - Lightweight base installation plus optional backend dependencies. No infrastructure provisioning or remote-job management.
 
-Implementation has started. Available now: an installable base package, offline configuration validation, shared metadata/preflight contracts, and an optional schema-checked [local CSV reader](docs/data-io.md). Data processing, AutoML, other connectors, and workflow execution remain in the backlog. No package has been published to PyPI.
+Implementation has started. Available now: an installable base package, offline configuration validation, shared metadata/preflight contracts, an optional schema-checked [local CSV reader](docs/data-io.md), and [pandas select/cast/sort](docs/processing.md). Further processing operations, AutoML, other connectors, and workflow execution remain in the backlog. No package has been published to PyPI.
 
 ```sh
 uv venv --python 3.11 .venv

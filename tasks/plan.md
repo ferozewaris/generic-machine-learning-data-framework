@@ -247,9 +247,9 @@ Further implementation follows the remaining dependencies. Publishing, provision
 - Scope: complete T005–T087 in dependency order (T080 optional), preserving T001–T004.
 - Baseline: clean `codex/library-core` at 16553d6; no applicable AGENTS.md found in repository or parent paths. Existing suite: 86 tests.
 - Checks: `.venv/bin/python -m pytest`, Ruff check/format, `build --no-isolation`, `git diff --check`. No type checker configured.
-- Current slice: T008 basic pandas select/cast/sort operations. T005–T007 and T087 completed with acceptance evidence.
+- Current slice: T009 atomic local CSV publication. T005–T008 and T087 completed with acceptance evidence.
 - Workflow: focused RED/GREEN → five-axis review/mutation check → fix → simplify only when useful → recheck → atomic local commit. No push, merge, deploy, or provisioning.
-- Pending: T008 onward as ordered above. No later capability is claimed implemented.
+- Pending: T009 onward as ordered above. No later capability is claimed implemented.
 - External evidence: real Kubernetes/AWS/Databricks/Snowflake/database/cloud-service checks need existing authorized environments; continue independent local work. Optional T080 needs user data and is not required for release.
 - T005a: 6 error-contract tests pass (92 total); RED confirmed missing module, plus unhashable-code regression. Message-guard mutation caught. Ruff/build pass. Five-axis review: no actionable findings; no simplification justified. Mutation restored and focused suite rechecked.
 - Findings: malformed code list initially escaped as TypeError; fixed with boundary type check. Later task evidence remains pending.
@@ -282,3 +282,5 @@ Further implementation follows the remaining dependencies. Publishing, provision
 - T007 completed:30 real CSV tests/223 total, optionalprofile install, lint/format/build and docs sample verification pass. Five-axis reviews clean after fixes; separate exception simplification rechecked. No platform/large-data/snapshot evidence claimed. T008 is next.
 
 - T008 complete implementation slice:23 real pandas operation tests/248 total; named select/cast/sort, null/type/time/stability and immutable-input cases pass. Missing module RED then implementation; finite-guard mutation detected5 failures and restored. Independent review clean (proposed NaN issue disproved end-to-end; regressioncoverage added toCSV separately). Ruff/format/build pass; no simplification clearly improves current code. Docs/status checkpoint next.
+
+- T008/C03 completed: all local evidence reviewed; no first-release completion claim.9 required tasks complete,77 required remain, plus optional T080. Next T009→T010→T011→T012 is the integrated local data path. External verification remains explicitly pending.

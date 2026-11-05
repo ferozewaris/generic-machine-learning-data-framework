@@ -334,7 +334,7 @@ python3 -m pytest tests/contract/data_io/test_csv_read.py -q
 
 <a id="t008"></a>
 
-### [ ] T008: Apply the example's stateless pandas steps
+### [x] T008: Apply the example's stateless pandas steps
 
 **Description:** Deliver this processing capability through the provider contracts, keeping previously completed paths working.
 
@@ -342,9 +342,9 @@ python3 -m pytest tests/contract/data_io/test_csv_read.py -q
 
 **Acceptance criteria:**
 
-- [ ] Select, cast, and sort operate on named inputs with explicit null/type/time/ordering behavior.
-- [ ] Unknown operation names and incompatible engine handles fail without eval, arbitrary imports, or collection.
-- [ ] Expected-value fixtures cover empty data, invalid casts, ordering, and temporal types.
+- [x] Select, cast, and sort operate on named inputs with explicit null/type/time/ordering behavior.
+- [x] Unknown operation names and incompatible engine handles fail without eval, arbitrary imports, or collection.
+- [x] Expected-value fixtures cover empty data, invalid casts, ordering, and temporal types.
 
 **Verification:**
 
@@ -352,7 +352,7 @@ python3 -m pytest tests/contract/data_io/test_csv_read.py -q
 python3 -m pytest tests/contract/processing/test_pandas_basic.py -q
 ```
 
-- [ ] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
+- [x] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
 
 **Dependencies:** T007
 
@@ -364,11 +364,13 @@ python3 -m pytest tests/contract/processing/test_pandas_basic.py -q
 
 **Estimated scope:** Medium (3 files).
 
+**Evidence (2026-11-05):** Real pandas select/cast/sort implements the existing transform provider signature.23 focused tests/248 total pass, including named chaining, empty frames, copied inputs, stable multikey/null order, strict numeric/temporal behavior, unsupported handles/operations and authorization of all steps before processing. Missing module reproduced RED; finite-guard mutation caught5 failures. Independent review has no actionable findings; no simplification justified. Ruff/format/build and documented YAML checks pass. Other operations/engines remain incomplete; this is not a release milestone.
+
 ### Checkpoint C03: After T087, T007, T008
 
-- [ ] Required tasks in this group meet their criteria; incomplete live evidence remains visible. Optional work is not counted as a release blocker.
-- [ ] Applicable focused/regression tests, build, lint, and formatting pass for implemented environments; no weakening or placeholder support.
-- [ ] Review milestone evidence and dependencies before proceeding; intermediate examples do not constitute release completion.
+- [x] Required tasks in this group meet their criteria; incomplete live evidence remains visible. Optional work is not counted as a release blocker.
+- [x] Applicable focused/regression tests, build, lint, and formatting pass for implemented environments; no weakening or placeholder support.
+- [x] Review milestone evidence and dependencies before proceeding; intermediate examples do not constitute release completion.
 
 
 ## Stage 04: T009, T010, T011
