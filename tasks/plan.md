@@ -241,3 +241,15 @@ A missing entire named capability blocks first-release completion; an unsupporte
 
 The user authorized incremental implementation using TDD and Ponytail. T001–T004 now provide the initial decisions, installable package, and offline validator; the backlog records the verified scope.
 Further implementation follows the remaining dependencies. Publishing, provisioning, external job management, and deployment are not part of these local implementation tasks.
+
+## Execution status — autonomous completion
+
+- Scope: complete T005–T087 in dependency order (T080 optional), preserving T001–T004.
+- Baseline: clean `codex/library-core` at 16553d6; no applicable AGENTS.md found in repository or parent paths. Existing suite: 86 tests.
+- Checks: `.venv/bin/python -m pytest`, Ruff check/format, `build --no-isolation`, `git diff --check`. No type checker configured.
+- Current slice: T005a safe error contracts; then T005b dataset/artifact/result contracts and T005c context/run receipts. T005 remains incomplete until all criteria pass.
+- Workflow: focused RED/GREEN → five-axis review/mutation check → fix → simplify only when useful → recheck → atomic local commit. No push, merge, deploy, or provisioning.
+- Pending: T006 preflight, T087 explicit intent, T007 onward as ordered above. No later capability is claimed implemented.
+- External evidence: real Kubernetes/AWS/Databricks/Snowflake/database/cloud-service checks need existing authorized environments; continue independent local work. Optional T080 needs user data and is not required for release.
+- T005a: 6 error-contract tests pass (92 total); RED confirmed missing module, plus unhashable-code regression. Message-guard mutation caught. Ruff/build pass. Five-axis review: no actionable findings; no simplification justified. Mutation restored and focused suite rechecked.
+- Findings: malformed code list initially escaped as TypeError; fixed with boundary type check. Later task evidence remains pending.
