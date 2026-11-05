@@ -10,6 +10,9 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = ["pydantic>=2.14.3,<3", "PyYAML>=6.0.3,<7"]
 
+[project.scripts]
+gmldf = "gmldf.__main__:main"
+
 [project.optional-dependencies]
 dev = ["pytest==9.2.0", "ruff==0.17.3", "build==1.6.1"]
 

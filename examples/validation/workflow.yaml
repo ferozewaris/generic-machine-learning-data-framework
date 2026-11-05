@@ -1,0 +1,23 @@
+schema_version: 1
+name: generic-data-validation
+kind: data
+engine: pandas
+execution:
+  profile: local
+sources:
+  - id: raw
+    connector: csv
+    location: does-not-exist.csv
+    columns:
+      amount: float
+steps:
+  - id: selected
+    operation: select
+    inputs: [raw]
+    params:
+      columns: [amount]
+outputs:
+  - id: result
+    dataset: selected
+    connector: csv
+    location: results.csv
