@@ -13,8 +13,8 @@ This document defines desired behavior, not currently implemented functionality.
 
 ## Tech Stack
 
-Proposed: Python 3.11, standard-library data structures and typing, a safe YAML loader, and schema validation. The schema-validation library is not selected. No compute or cloud dependencies.
-Exact dependency versions and supported runtime profiles remain unresolved until compatibility validation; no new packages are installed by this specification.
+Initial implementation: Python 3.11+, Pydantic 2 strict models, and a hardened PyYAML 6 SafeLoader. No compute or cloud dependencies. See the [recorded contract](docs/decisions/library-contract.md) for input limits and the tested initial profile.
+Backend dependency versions and external runtime profiles remain separate compatibility checks.
 
 ## Requirements and Provider Contracts
 
@@ -77,6 +77,5 @@ Use pytest unit and contract tests with fake resolvers and import-isolation chec
 
 ## Open Questions
 
-- Technical choices remaining: confirm or replace the proposed Python 3.11 target and public name `gmldf`.
-- Select the schema-validation library and config-size limits.
+- Package name, Python target, schema dependencies, and input limits are recorded in [the implementation contract](docs/decisions/library-contract.md).
 - Which enterprise policy restrictions are mandatory for the first adopters?
