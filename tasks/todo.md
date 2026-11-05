@@ -377,7 +377,7 @@ python3 -m pytest tests/contract/processing/test_pandas_basic.py -q
 
 <a id="t009"></a>
 
-### [ ] T009: Publish local CSV results safely
+### [x] T009: Publish local CSV results safely
 
 **Description:** Deliver this data-io capability through the provider contracts, keeping previously completed paths working.
 
@@ -385,9 +385,9 @@ python3 -m pytest tests/contract/processing/test_pandas_basic.py -q
 
 **Acceptance criteria:**
 
-- [ ] Default error_if_exists preserves an existing destination; explicit overwrite affects only that destination.
-- [ ] Atomic local publish is tested under injected failure and returns a truthful commit/retry receipt.
-- [ ] Append/upsert are rejected until their semantics are supported; ambiguous commits are never blindly retried.
+- [x] Default error_if_exists preserves an existing destination; explicit overwrite affects only that destination.
+- [x] Atomic local publish is tested under injected failure and returns a truthful commit/retry receipt.
+- [x] Append/upsert are rejected until their semantics are supported; ambiguous commits are never blindly retried.
 
 **Verification:**
 
@@ -395,7 +395,7 @@ python3 -m pytest tests/contract/processing/test_pandas_basic.py -q
 python3 -m pytest tests/contract/data_io/test_csv_write.py tests/unit/data_io/test_local_publish.py -q
 ```
 
-- [ ] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
+- [x] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
 
 **Dependencies:** T007
 
@@ -407,6 +407,8 @@ python3 -m pytest tests/contract/data_io/test_csv_write.py tests/unit/data_io/te
 - `tests/unit/data_io/test_local_publish.py`
 
 **Estimated scope:** Medium (4 files).
+
+**Evidence (2026-11-05):** T009a atomic local publisher; T009b typed pandas CSV writer; T009c usage/evidence.13 CSVwriter and9 publisher cases pass (270 total), covering existing/concurrent destination preservation, explicit overwrite, serialization/precommit/ambiguous/postcommit failures, safe receipts, row-count truthfulness, null-token collisions, empty/Unicode/decimal/boolean/UTF16/UTC round trips and denied/unsupported writes. RED preceded implementation and review fixes (row counts/nonmidnight dates). Independent re-review clean; mode/date mutations caught failures and restored. Shared framing/path extraction was separately verified with32 unchanged reader tests. No further simplification justified. Ruff/format/build and documented YAML validate. Atomic visibility is verified; crash durability, source-version linkage and cancellation recovery remain later tasks.
 
 <a id="t010"></a>
 

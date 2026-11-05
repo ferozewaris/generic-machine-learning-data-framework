@@ -22,8 +22,8 @@ The library does not provision infrastructure or submit/manage remote jobs.
 - [Capability map](../CAPABILITY-MAP.md): stable eight module ids and provider dependency direction.
 - Module specs: [core](../SPEC-core-contracts.md), [I/O](../SPEC-data-io.md), [processing](../SPEC-processing.md), [AutoML](../SPEC-automl.md), [lifecycle](../SPEC-model-lifecycle.md), [workflow](../SPEC-workflow.md), [execution](../SPEC-execution.md), [examples](../SPEC-recipes.md).
 - [Idea/reference notes](../docs/ideas/portable-data-automl-framework.md): selective inspiration only.
-- Implementation has started with an installable base package and offline config validation; completed-task evidence lives in the backlog. No data/ML backend, external-host verification, or published artifact exists yet.
-- This revision updates the same incomplete plan in place, retains original task ids, and implements no library code.
+- Implemented: base/config/core contracts, preflight, local pandas CSV read/write and initial pandas operations; evidence lives in the backlog. Workflow execution, ML, other backends, external-host verification and publishing remain incomplete.
+- Keep this incomplete plan updated in place, retaining original task ids and evidence.
 
 ## Decisions Resolved by the Interview
 
@@ -144,7 +144,7 @@ python3 -m ruff format --check src tests
 python3 -m pytest -m 'not integration' -q
 ```
 
-Per-task commands are prospective; none were executed to validate a nonexistent library.
+Commands in pending tasks are prospective; completed tasks record their actual executed checks.
 Run optional suites in the correct pinned environment. Real connector/host checks require an existing authorized test environment; unavailable evidence remains incomplete, never a mocked/skipped pass.
 Use small synthetic generic acceptance fixtures. Numerical tolerances and example horizons are fixture-specific, not implicit user model-selection defaults.
 For user-owned container/Kubernetes/platform examples, the caller launches the process; library calls themselves must make no job-management requests.
@@ -239,7 +239,7 @@ A missing entire named capability blocks first-release completion; an unsupporte
 
 ## Review Boundary
 
-The user authorized incremental implementation using TDD and Ponytail. T001–T004 now provide the initial decisions, installable package, and offline validator; the backlog records the verified scope.
+The user authorized autonomous incremental implementation, TDD, review/fix and simplification. T001–T009 and T087 are complete; the backlog records verified scope.
 Further implementation follows the remaining dependencies. Publishing, provisioning, external job management, and deployment are not part of these local implementation tasks.
 
 ## Execution status — autonomous completion
@@ -247,9 +247,9 @@ Further implementation follows the remaining dependencies. Publishing, provision
 - Scope: complete T005–T087 in dependency order (T080 optional), preserving T001–T004.
 - Baseline: clean `codex/library-core` at 16553d6; no applicable AGENTS.md found in repository or parent paths. Existing suite: 86 tests.
 - Checks: `.venv/bin/python -m pytest`, Ruff check/format, `build --no-isolation`, `git diff --check`. No type checker configured.
-- Current slice: T009 atomic local CSV publication. T005–T008 and T087 completed with acceptance evidence.
+- Current slice: T010 data-only workflow composition. T001–T009 and T087 completed with acceptance evidence.
 - Workflow: focused RED/GREEN → five-axis review/mutation check → fix → simplify only when useful → recheck → atomic local commit. No push, merge, deploy, or provisioning.
-- Pending: T009 onward as ordered above. No later capability is claimed implemented.
+- Pending: T010 onward as ordered above. No later capability is claimed implemented.
 - External evidence: real Kubernetes/AWS/Databricks/Snowflake/database/cloud-service checks need existing authorized environments; continue independent local work. Optional T080 needs user data and is not required for release.
 - T005a: 6 error-contract tests pass (92 total); RED confirmed missing module, plus unhashable-code regression. Message-guard mutation caught. Ruff/build pass. Five-axis review: no actionable findings; no simplification justified. Mutation restored and focused suite rechecked.
 - Findings: malformed code list initially escaped as TypeError; fixed with boundary type check. Later task evidence remains pending.
@@ -288,3 +288,5 @@ Further implementation follows the remaining dependencies. Publishing, provision
 - T009 split: a) generic atomic local publisher/receipts; b) pandas CSV writer through its provider contract; c) docs/evidence. T009a complete:9 local filesystem cases/257 total; missing module RED, row-count regressions fixed, no-clobber mutation detected4 failures and restored. Independent re-review clean; no simplification justified; Ruff/format/build pass. T009 remains incomplete until CSV writer acceptance. Atomic visibility only; directory fsync/crash/cancellation recovery not claimed.
 
 - T009b complete implementation slice:13 real CSVwriter tests plus9 publication cases/270 total pass. Writer RED preceded behavior; nonmidnight-date loss reproduced/fixed; UnicodeCSVparser selection made explicit and tested with warningsaserrors. Datatype/nullcollision/empty/overwrite/serializationfailure/policy tests pass. Dateguard mutation caught2 failures; restored/rechecked. Independent review clean; no further simplification justified after sharedframing/path extraction in separate811084c. Ruff/format/build pass. T009c docs/evidence next.
+
+- T009 completed:270 full-suite tests and required lint/format/build pass; acceptance/evidence/docs reviewed with no actionable findings.10 required tasks complete,76 required remain plus optional T080. Next T010 composes providers without runtime imports or ML dependencies.
