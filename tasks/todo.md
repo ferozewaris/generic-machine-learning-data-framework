@@ -489,7 +489,7 @@ python3 -m pytest tests/contract/execution/test_local_cli.py -q
 
 <a id="t012"></a>
 
-### [ ] T012: Prove the complete CSV data path
+### [x] T012: Prove the complete CSV data path
 
 **Description:** Deliver this recipes capability through the provider contracts, keeping previously completed paths working.
 
@@ -497,9 +497,9 @@ python3 -m pytest tests/contract/execution/test_local_cli.py -q
 
 **Acceptance criteria:**
 
-- [ ] A fresh local install reads the synthetic CSV, applies configured steps, and writes the expected output without source edits.
-- [ ] Changing input/output paths needs config changes only; invalid config produces no business output.
-- [ ] Quickstart uses actual implemented commands and states supported behavior accurately.
+- [x] A fresh local install reads the synthetic CSV, applies configured steps, and writes the expected output without source edits.
+- [x] Changing input/output paths needs config changes only; invalid config produces no business output.
+- [x] Quickstart uses actual implemented commands and states supported behavior accurately.
 
 **Verification:**
 
@@ -507,7 +507,7 @@ python3 -m pytest tests/contract/execution/test_local_cli.py -q
 python3 -m pytest tests/e2e/test_data_only.py -q
 ```
 
-- [ ] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
+- [x] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
 
 **Dependencies:** T011
 
@@ -519,6 +519,8 @@ python3 -m pytest tests/e2e/test_data_only.py -q
 - `docs/quickstart.md`
 
 **Estimated scope:** Medium (4 files).
+
+**Evidence:**4 real clean-install e2e cases/319 full tests, Ruff/format/build pass. Fresh standardpip wheel/runtime and devbuild verified offline from prepared dependency wheels. Missing Hatchling devdependency reproduced/fixed/re-reviewed. No unresolved findings or skipped checks. See docs/quickstart.md and docs/development.md.
 
 <a id="t013"></a>
 

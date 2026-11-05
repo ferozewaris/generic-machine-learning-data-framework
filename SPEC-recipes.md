@@ -14,7 +14,7 @@ The [confirmed intent](docs/intent/generic-data-ml-library.md) defines scope. Fi
 ## Tech Stack
 
 Uses the library and independently installed optional environments. Synthetic data is local and non-sensitive.
-Concrete candidate examples and dependency pins are technical choices; no full backend compatibility is claimed today.
+T012 verifies the [local data quickstart](docs/quickstart.md) through fresh isolated wheel installations. Other examples and full backend compatibility remain pending; all first-release requirements below remain in scope.
 
 ## Example Requirements
 

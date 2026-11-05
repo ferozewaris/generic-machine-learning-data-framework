@@ -19,7 +19,7 @@ uv pip install --python .venv/bin/python -e '.[dev]'
 
 You can also install with pip inside an existing Python 3.11+ environment: `python -m pip install -e .`. uv is a development convenience only.
 
-The validation command does not read configured data, resolve secrets, train models, or certify backend compatibility. See [configuration](docs/configuration.md), [development commands](docs/development.md), and [actual compatibility evidence](docs/compatibility.md).
+The validation command does not read configured data, resolve secrets, train models, or certify backend compatibility. Run the [local data quickstart](docs/quickstart.md). See [configuration](docs/configuration.md), [development commands](docs/development.md), and [actual compatibility evidence](docs/compatibility.md).
 
 Start with the [confirmed intent](docs/intent/generic-data-ml-library.md), [capability map](CAPABILITY-MAP.md), [implementation plan](tasks/plan.md), and [task backlog](tasks/todo.md).
 The capability map links the eight module specs. All requested capabilities belong to the first release; implementation examples are not smaller releases.
