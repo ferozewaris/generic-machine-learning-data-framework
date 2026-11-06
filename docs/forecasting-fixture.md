@@ -37,3 +37,27 @@ The model fits the training partition only and repeats the last observed target 
 The internal `ForecastEvaluation` contains core `CandidateRecord`, `FitData`, and prediction `DatasetRef` contracts plus the native `NaiveModel`. It records one initiated fit, seed, elapsed trial duration, split metadata digest, actual fitted cutoff and available source versions. The split digest contains partition/source metadata, not target values; unknown source versions remain unknown and do not establish snapshots. There is no fabricated durable model artifact or test assessment.
 
 Naive state roundtrips through strict JSON. Its datetime metadata requires a microsecond-aligned fitted cutoff; finer origins reject rather than truncate. Integer targets requiring implicit precision loss in float64 fitting/scoring reject; users may choose an explicit processing cast. Horizon/frequency validation and range errors are controlled. Whole-run training deadlines/worker cancellation, bounded multi-candidate search, final train+validation refit/test assessment, artifact publication and ordinary inference remain subsequent tasks. The CLI still rejects `kind: train` until workflow integration is implemented.
+
+## Native ARIMA candidate (T016 in progress)
+
+`gmldf.automl.candidates.arima.fit_arima` takes the training partition only,
+with explicit time/target columns, frequency and parameters. The verified
+`.[arima]` profile uses statsmodels0.15.0 on CPython3.11.18/macOS arm64.
+It preserves the private native fitted-results handle for later trusted
+persistence; JSON contains metadata only and cannot forecast without that handle.
+
+The current nonseasonal profile requires `order: [p,d,q]`, with integer
+p/q in 0–24 and d in 0–2. Optional settings are `trend` (`n` default,
+`c`, `t`, `ct`), strict boolean `enforce_stationarity`/`enforce_invertibility`
+(both true), and `maxiter` (1–10000, default100). Trends eliminated by
+differencing reject before fitting. Unknown parameters reject. These are
+library profile bounds, not a promise of convergence or a whole-run deadline.
+Omitted search domains will be resolved in T086, not by guessing in this primitive.
+
+Fitting uses the [statsmodels ARIMA API](https://www.statsmodels.org/stable/generated/statsmodels.tsa.arima.model.ARIMA.html)
+and its [statespace fit method](https://www.statsmodels.org/stable/generated/statsmodels.tsa.arima.model.ARIMA.fit.html).
+Nonconvergence and native failures become safe candidate errors; warnings are
+counted without storing their messages. Forecasts must have exact future dates,
+the requested length and finite predictions. No exogenous regressors or seasonal
+parameters are accepted by this profile. Capability/evaluation integration and
+bounded workers remain the next slices; CLI training is still unsupported.

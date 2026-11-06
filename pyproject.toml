@@ -16,6 +16,12 @@ gmldf = "gmldf.__main__:main"
 [project.optional-dependencies]
 pandas = ["pandas==3.1.1", "numpy==2.4.6", "python-dateutil==4.0.0", "tzdata==2026.6"]
 parquet = ["pandas==3.1.1", "numpy==2.4.6", "python-dateutil==4.0.0", "tzdata==2026.6", "pyarrow==26.0.1"]
+arima = [
+    "pandas==3.1.1", "numpy==2.4.6", "python-dateutil==4.0.0", "tzdata==2026.6",
+    "statsmodels==0.15.0", "scipy==1.17.1", "patsy==1.0.3", "packaging==26.3",
+    "formulaic==1.2.2", "interface-meta==2.0.1", "narwhals==2.28.0", "wrapt==2.5.2",
+    "typing-extensions==4.16.0",
+]
 dev = ["pytest==9.2.0", "ruff==0.17.3", "build==1.6.1", "hatchling==1.33.0"]
 
 [tool.hatch.build.targets.wheel]
