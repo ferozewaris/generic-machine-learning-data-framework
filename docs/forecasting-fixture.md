@@ -38,7 +38,7 @@ The internal `ForecastEvaluation` contains core `CandidateRecord`, `FitData`, an
 
 Naive state roundtrips through strict JSON. Its datetime metadata requires a microsecond-aligned fitted cutoff; finer origins reject rather than truncate. Integer targets requiring implicit precision loss in float64 fitting/scoring reject; users may choose an explicit processing cast. Horizon/frequency validation and range errors are controlled. Whole-run training deadlines/worker cancellation, bounded multi-candidate search, final train+validation refit/test assessment, artifact publication and ordinary inference remain subsequent tasks. The CLI still rejects `kind: train` until workflow integration is implemented.
 
-## Native ARIMA candidate (T016 in progress)
+## Native ARIMA candidate (T016)
 
 `gmldf.automl.candidates.arima.fit_arima` takes the training partition only,
 with explicit time/target columns, frequency and parameters. The verified
@@ -59,5 +59,8 @@ and its [statespace fit method](https://www.statsmodels.org/stable/generated/sta
 Nonconvergence and native failures become safe candidate errors; warnings are
 counted without storing their messages. Forecasts must have exact future dates,
 the requested length and finite predictions. No exogenous regressors or seasonal
-parameters are accepted by this profile. Capability/evaluation integration and
-bounded workers remain the next slices; CLI training is still unsupported.
+parameters are accepted by this profile. `gmldf.automl.forecasting.evaluate_arima` checks exact profile versions, task,
+engine, policy and explicitly listed candidate before data access, then records
+resolved parameters, causal fit metadata and validation MAE. It accepts one resolved
+`statsmodels.arima` candidate; domain resolution, multi-candidate search and bounded
+workers remain the next slices. CLI training is still unsupported.

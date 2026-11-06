@@ -637,7 +637,7 @@ python3 -m pytest tests/contract/automl/test_baseline.py -q
 
 <a id="t016"></a>
 
-### [ ] T016: Fit an ARIMA forecasting candidate
+### [x] T016: Fit an ARIMA forecasting candidate
 
 **Description:** Deliver this automl capability through the provider contracts, keeping previously completed paths working.
 
@@ -645,9 +645,9 @@ python3 -m pytest tests/contract/automl/test_baseline.py -q
 
 **Acceptance criteria:**
 
-- [ ] The explicitly listed ARIMA candidate validates task/parameter compatibility; omitted ranges will resolve through the default-space provider.
-- [ ] Real library fits forecast from the origin without held-out target access and preserve the candidate persistence handle.
-- [ ] Fit/convergence failures are safe candidate failures; dependency/version requirements are recorded.
+- [x] The explicitly listed ARIMA candidate validates task/parameter compatibility; omitted ranges will resolve through the default-space provider.
+- [x] Real library fits forecast from the origin without held-out target access and preserve the candidate persistence handle.
+- [x] Fit/convergence failures are safe candidate failures; dependency/version requirements are recorded.
 
 **Verification:**
 
@@ -655,7 +655,7 @@ python3 -m pytest tests/contract/automl/test_baseline.py -q
 python3 -m pytest tests/contract/automl/test_arima.py -q
 ```
 
-- [ ] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
+- [x] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
 
 **Dependencies:** T015
 
@@ -666,6 +666,8 @@ python3 -m pytest tests/contract/automl/test_arima.py -q
 - `pyproject.toml`
 
 **Estimated scope:** Medium (3 files).
+
+**Evidence:** 45 actual ARIMA contracts (native forecasts, convergence failures, immutable metadata, capability preflight and causal MAE);466 full tests, Ruff/format/build pass. Independent final reviews clean after provenance fix; training-on-validation mutation detected and restored. `statsmodels.arima` is a single resolved univariate candidate here; T086 resolves domains and T017/T018 supply search/workers. No full train/CLI/deadline claim.
 
 <a id="t086"></a>
 

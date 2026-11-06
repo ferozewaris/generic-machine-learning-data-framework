@@ -22,7 +22,7 @@ The library does not provision infrastructure or submit/manage remote jobs.
 - [Capability map](../CAPABILITY-MAP.md): stable eight module ids and provider dependency direction.
 - Module specs: [core](../SPEC-core-contracts.md), [I/O](../SPEC-data-io.md), [processing](../SPEC-processing.md), [AutoML](../SPEC-automl.md), [lifecycle](../SPEC-model-lifecycle.md), [workflow](../SPEC-workflow.md), [execution](../SPEC-execution.md), [examples](../SPEC-recipes.md).
 - [Idea/reference notes](../docs/ideas/portable-data-automl-framework.md): selective inspiration only.
-- Implemented: base/config/core contracts, preflight, local pandas CSV read/write and initial pandas operations; evidence lives in the backlog. Workflow execution, ML, other backends, external-host verification and publishing remain incomplete.
+- Implemented: base/config/core contracts, preflight, local pandas CSV/Parquet data workflows and CLI, plus explicit native naive/ARIMA forecast evaluation. Full ML workflows, further backends, external-host verification and publishing remain incomplete; evidence lives in the backlog.
 - Keep this incomplete plan updated in place, retaining original task ids and evidence.
 
 ## Decisions Resolved by the Interview
@@ -333,3 +333,6 @@ Further implementation follows the remaining dependencies. Publishing, provision
 
 - T016 prerequisite: shared immutable forecast-origin validation extracted in separate8ab68d4;421 tests, lint/format/build, self/independent review clean, behavior preserved.
 - T016 native slice in progress:34 actualARIMA cases; missingmoduleRED then nativefit/forecast implementation. Independent review identified mutable nested fittedparameters; mutationRED reproduced/fixed with frozen tuple/scalarparameterstate. Final455 full tests, Ruff/format/build pass; convergenceguardmutation caught1 failure and source restored/rechecked. Final independent review clean; no further simplification justified. Capability/evaluation integration and T086 domains remain unchecked.
+
+- T016 evaluation/simplification complete:45 ARIMA cases/466 full tests, Ruff/format/build pass.11 missing-API RED tests preceded capability/evaluation behavior. Exact13-package arima profile recorded; heldout mutations and independent MAE prove causal fits. Train-on-validation mutation caught1 failure, restored/rechecked. Duplicate preflight/metric guards simplified separately bf0e071, final independent review clean.
+- T016 complete:17 required tasks complete,69 required remain plus optional T080. Current slice T086 versioned domains, then T017 search/T018 enforceable workers/T019 assessment. Training CLI/external profiles remain pending; no release completion claim.
