@@ -4,10 +4,12 @@ import hashlib
 import json
 import math
 from dataclasses import dataclass
+from functools import partial
 from time import perf_counter
 
 from pydantic import ValidationError
 
+from gmldf.automl.candidates.arima import ArimaModel, ArimaParams, fit_arima
 from gmldf.automl.candidates.naive import NaiveModel, fit_naive
 from gmldf.automl.forecast_data import split_forecast_data
 from gmldf.core.capabilities import Capability, CapabilityRegistry, CapabilityRequest
@@ -33,12 +35,36 @@ NAIVE_LAST = Capability(
 )
 
 
+ARIMA = Capability(
+    id="pandas_arima",
+    operation="fit",
+    engine="pandas",
+    profile="local",
+    task="forecasting",
+    algorithm="statsmodels.arima",
+    status="verified",
+    install_extra="arima",
+    dependencies={
+        **NAIVE_LAST.dependencies,
+        "statsmodels": "0.15.0",
+        "scipy": "1.17.1",
+        "patsy": "1.0.3",
+        "packaging": "26.3",
+        "formulaic": "1.2.2",
+        "interface-meta": "2.0.1",
+        "narwhals": "2.28.0",
+        "wrapt": "2.5.2",
+        "typing-extensions": "4.16.0",
+    },
+)
+
+
 @dataclass(frozen=True)
 class ForecastEvaluation:
     record: CandidateRecord
     fit: FitData
     predictions: DatasetRef
-    model: NaiveModel
+    model: NaiveModel | ArimaModel
     metric: str
     greater_is_better: bool
 
@@ -77,6 +103,42 @@ def evaluate_naive(dataset: DatasetRef, spec: MLSpec, context: RunContext) -> Fo
     if spec.evaluation.greater_is_better not in {None, False}:
         raise ConfigError("ml.evaluation.greater_is_better", "mae_must_be_minimized")
     return _evaluate_forecast(dataset, spec, fit_naive, {})
+
+
+def evaluate_arima(dataset: DatasetRef, spec: MLSpec, context: RunContext) -> ForecastEvaluation:
+    try:
+        spec = MLSpec.model_validate(spec.model_dump())
+    except ValidationError as cause:
+        raise ConfigError("ml", "invalid_ml_spec") from cause
+    registry = CapabilityRegistry([ARIMA])
+    for index, algorithm in enumerate(spec.algorithms):
+        registry.require(
+            CapabilityRequest(
+                operation="fit",
+                engine=dataset.engine,
+                profile="local",
+                task=spec.task,
+                algorithm=algorithm.name,
+            ),
+            allowed=context.allowed_capabilities,
+            path=f"ml.algorithms.{index}.name",
+        )
+    if len(spec.algorithms) != 1:
+        raise ConfigError("ml.algorithms", "single_unique_arima_candidate_required")
+    algorithm = spec.algorithms[0]
+    try:
+        parameters = ArimaParams.model_validate(algorithm.parameters).model_dump(mode="json")
+    except ValidationError as cause:
+        raise ConfigError("ml.algorithms.0.parameters", "invalid_arima_parameters") from cause
+    if algorithm.search_space is not None:
+        raise ConfigError("ml.algorithms.0.search_space", "single_resolved_candidate_required")
+    if spec.features:
+        raise FrameworkError("CAPABILITY_UNSUPPORTED", path="ml.features")
+    if spec.evaluation.metric != "mae":
+        raise FrameworkError("CAPABILITY_UNSUPPORTED", path="ml.evaluation.metric")
+    if spec.evaluation.greater_is_better not in {None, False}:
+        raise ConfigError("ml.evaluation.greater_is_better", "mae_must_be_minimized")
+    return _evaluate_forecast(dataset, spec, partial(fit_arima, parameters=parameters), parameters)
 
 
 def _evaluate_forecast(dataset, spec, fit_candidate, parameters) -> ForecastEvaluation:

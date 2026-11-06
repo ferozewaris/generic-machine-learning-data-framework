@@ -179,3 +179,153 @@ def test_fitted_parameters_are_immutable_provenance(training):
         model.parameters.order = (24, 2, 24)
     assert model.model_dump_json() == metadata
     pd.testing.assert_frame_equal(model.forecast(2), predictions)
+
+
+def evaluation_inputs():
+    from gmldf.core.config import MLSpec
+    from gmldf.core.types import ColumnSpec, DatasetRef, RunContext, RunIdentity
+
+    frame = pd.read_csv(Path(__file__).parents[2] / "fixtures/automl/sales.csv")
+    frame["date"] = pd.to_datetime(frame["date"], utc=True)
+    dataset = DatasetRef(
+        id="raw",
+        engine="pandas",
+        materialization="memory",
+        columns=[
+            ColumnSpec(name="date", dtype="timestamp"),
+            ColumnSpec(name="value", dtype="float64"),
+        ],
+    ).with_handle(frame)
+    spec = MLSpec(
+        task="forecasting",
+        algorithms=[
+            {"name": "statsmodels.arima", "parameters": {"order": [1, 1, 0], "trend": "t"}}
+        ],
+        evaluation={"metric": "mae"},
+        tuning={"max_trials": 1, "timeout_seconds": 30.0, "seed": 42},
+        time_column="date",
+        target="value",
+        frequency="D",
+        horizon=28,
+        split={
+            "method": "temporal_holdout",
+            "train_end": "2024-11-05T00:00:00Z",
+            "validation_end": "2024-12-03T00:00:00Z",
+            "test_end": "2024-12-31T00:00:00Z",
+        },
+    )
+    context = RunContext(
+        identity=RunIdentity(
+            run_id="run",
+            attempt_id="attempt",
+            config_digest="sha256:" + "a" * 64,
+            code_version="test",
+            environment={"python": "3.11"},
+        ),
+        artifact_root="file:///tmp/run",
+        allowed_capabilities=["pandas_arima"],
+    )
+    return dataset, spec, context
+
+
+def test_explicit_arima_evaluation_has_recomputable_mae_and_causal_fit():
+    from gmldf.automl.forecasting import evaluate_arima
+
+    dataset, spec, context = evaluation_inputs()
+    result = evaluate_arima(dataset, spec, context)
+    actual = dataset.handle["value"].iloc[675:703].tolist()
+    expected = (
+        math.fsum(
+            abs(value - prediction)
+            for value, prediction in zip(
+                actual, result.predictions.handle["prediction"], strict=True
+            )
+        )
+        / 28
+    )
+    assert result.record.algorithm == "statsmodels.arima"
+    assert result.record.validation_score == pytest.approx(expected)
+    assert result.record.parameters["order"] == [1, 1, 0]
+    assert result.record.parameters["trend"] == "t"
+    assert result.record.parameters["maxiter"] == 100
+    assert result.record.fit_count == 1
+    assert result.record.seed == 42
+    assert result.fit.row_count == result.model.results.nobs == 675
+    assert result.fit.cutoff == pd.Timestamp(spec.split["train_end"])
+    changed = dataset.handle.copy(deep=True)
+    changed.loc[675:, "value"] += 1000.0
+    changed_result = evaluate_arima(dataset.with_handle(changed), spec, context)
+    pd.testing.assert_frame_equal(result.predictions.handle, changed_result.predictions.handle)
+    assert changed_result.record.validation_score != result.record.validation_score
+    assert changed_result.record.split_id == result.record.split_id
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        "algorithm",
+        "policy",
+        "engine",
+        "task",
+        "metric",
+        "features",
+        "parameters",
+        "search",
+        "multiple",
+    ],
+)
+def test_arima_preflight_rejects_before_data_access(change):
+    from gmldf.automl.forecasting import evaluate_arima
+    from gmldf.core.config import MLSpec
+
+    dataset, spec, context = evaluation_inputs()
+    raw = spec.model_dump()
+    dataset = dataset.with_handle(None)
+    if change == "algorithm":
+        raw["algorithms"][0]["name"] = "installed.unlisted"
+    elif change == "policy":
+        context = context.model_copy(update={"allowed_capabilities": []})
+    elif change == "engine":
+        dataset = dataset.model_copy(update={"engine": "spark"})
+    elif change == "task":
+        raw["task"] = "regression"
+    elif change == "metric":
+        raw["evaluation"]["metric"] = "rmse"
+    elif change == "features":
+        raw["features"] = ["other"]
+    elif change == "parameters":
+        raw["algorithms"][0]["parameters"]["order"] = [1, 1]
+    elif change == "search":
+        raw["algorithms"][0]["search_space"] = {"order": [[1, 1, 0]]}
+    else:
+        raw["algorithms"].append({"name": "naive.last"})
+    with pytest.raises((ConfigError, FrameworkError)) as caught:
+        evaluate_arima(dataset, MLSpec.model_validate(raw), context)
+    if isinstance(caught.value, FrameworkError):
+        assert caught.value.error.code in {"CAPABILITY_UNSUPPORTED", "POLICY_DENIED"}
+
+
+def test_arima_exact_dependency_preflight_provides_install_hint(monkeypatch):
+    from functools import partial
+
+    from gmldf.automl import forecasting
+    from gmldf.automl.forecasting import evaluate_arima
+    from gmldf.core import capabilities
+
+    dataset, spec, context = evaluation_inputs()
+    original = capabilities.version
+
+    def missing_statsmodels(name):
+        if name == "statsmodels":
+            raise capabilities.PackageNotFoundError(name)
+        return original(name)
+
+    monkeypatch.setattr(
+        forecasting,
+        "CapabilityRegistry",
+        partial(capabilities.CapabilityRegistry, version_reader=missing_statsmodels),
+    )
+    with pytest.raises(FrameworkError) as caught:
+        evaluate_arima(dataset.with_handle(None), spec, context)
+    assert caught.value.error.code == "CAPABILITY_UNSUPPORTED"
+    assert caught.value.error.dependency.install_extra == "arima"
