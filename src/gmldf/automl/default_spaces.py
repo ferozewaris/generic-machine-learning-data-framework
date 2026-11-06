@@ -7,7 +7,7 @@ from itertools import product
 from pydantic import ValidationError
 
 from gmldf.automl.candidates.arima import ArimaParams
-from gmldf.core.config import ConfigError, MLSpec, Spec
+from gmldf.core.config import ConfigError, MLSpec, Spec, validate_ml_intent
 from gmldf.core.errors import FrameworkError
 from gmldf.core.types import SearchDomain
 
@@ -29,6 +29,7 @@ def resolve_search(spec: MLSpec) -> list[SearchDomain]:
         spec = MLSpec.model_validate(spec.model_dump())
     except ValidationError as cause:
         raise ConfigError("ml", "invalid_ml_spec") from cause
+    validate_ml_intent(spec)
     if spec.task != "forecasting":
         raise FrameworkError("CAPABILITY_UNSUPPORTED", path="ml.task")
     if spec.evaluation.metric != "mae":

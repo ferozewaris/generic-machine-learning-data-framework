@@ -17,6 +17,7 @@ This table distinguishes profiles to test from verified behavior. Only an execut
 | Forecast data/temporal holdout validation / pinned local pandas profile | Verified | T014:27 tests;731 synthetic daily rows, exact675/28/28 windows, alternate frequency/columns |
 | Explicit naive forecast candidate / pinned local pandas profile | Verified | T015:17 native-state and15 evaluation tests, causal MAE/fit accounting/JSON precision |
 | Explicit ARIMA forecast candidate / statsmodels0.15.0 pinned profile | Verified | T016:45 native/evaluation contracts;675 training rows, origin forecasts, safe failures and causal MAE |
+| Offline versioned candidate domains | Verified | T086:27 tests; explicit ids, valid overrides/fixed values, complete finite-grid validation and JSON evidence |
 | Full AutoML task workflows and other requested ML integrations | Planned | T017–T024, T046–T056 |
 | Cloud/database/catalog connectors and Delta outputs | Planned | T059–T072 |
 | MLflow lifecycle | Planned | T057–T058 |
@@ -29,6 +30,6 @@ See [host-profile requirements](decisions/host-compatibility.md) and the [comple
 
 Tested core dependency versions: Pydantic 2.14.3, pydantic-core 2.50.4, PyYAML 6.0.3. This evidence does not verify any processing engine, connector, model, external host, or public PyPI installation.
 
-Tested local CSV optional profile: pandas3.1.1, NumPy2.4.6, python-dateutil4.0.0, tzdata2026.6. These exact versions are pinned in `.[pandas]` and checked by its local reader declaration. Total current suite:466 tests. Local data coordination, CLI and clean-install CSV recipe are verified; Parquet is additionally verified with PyArrow26.0.1; cancellation/recovery and remote hosts remain pending.
+Tested local CSV optional profile: pandas3.1.1, NumPy2.4.6, python-dateutil4.0.0, tzdata2026.6. These exact versions are pinned in `.[pandas]` and checked by its local reader declaration. Total current suite:493 tests. Local data coordination, CLI and clean-install CSV recipe are verified; Parquet is additionally verified with PyArrow26.0.1; cancellation/recovery and remote hosts remain pending.
 
 The optional `.[arima]` runtime profile is pinned in pyproject.toml and checked by the `pandas_arima` fit declaration, including statsmodels, SciPy and transitive runtime versions. This evidence covers local univariate candidates, not bounded training workflows, model loading or remote execution.

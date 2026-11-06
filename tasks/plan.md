@@ -247,9 +247,9 @@ Further implementation follows the remaining dependencies. Publishing, provision
 - Scope: complete T005–T087 in dependency order (T080 optional), preserving T001–T004.
 - Baseline: clean `codex/library-core` at 16553d6; no applicable AGENTS.md found in repository or parent paths. Existing suite: 86 tests.
 - Checks: `.venv/bin/python -m pytest`, Ruff check/format, `build --no-isolation`, `git diff --check`. No type checker configured.
-- Current slice: T016 ARIMA candidate. T001–T015 and T087 completed with acceptance evidence.
+- Current slice: T017 bounded validation search. T001–T016, T086 and T087 completed with acceptance evidence.
 - Workflow: focused RED/GREEN → five-axis review/mutation check → fix → simplify only when useful → recheck → atomic local commit. No push, merge, deploy, or provisioning.
-- Pending: T016 onward as ordered above. No later capability is claimed implemented.
+- Pending: T017 onward as ordered above (T086/T087 already complete). No later capability is claimed implemented.
 - External evidence: real Kubernetes/AWS/Databricks/Snowflake/database/cloud-service checks need existing authorized environments; continue independent local work. Optional T080 needs user data and is not required for release.
 - T005a: 6 error-contract tests pass (92 total); RED confirmed missing module, plus unhashable-code regression. Message-guard mutation caught. Ruff/build pass. Five-axis review: no actionable findings; no simplification justified. Mutation restored and focused suite rechecked.
 - Findings: malformed code list initially escaped as TypeError; fixed with boundary type check. Later task evidence remains pending.
@@ -336,3 +336,5 @@ Further implementation follows the remaining dependencies. Publishing, provision
 
 - T016 evaluation/simplification complete:45 ARIMA cases/466 full tests, Ruff/format/build pass.11 missing-API RED tests preceded capability/evaluation behavior. Exact13-package arima profile recorded; heldout mutations and independent MAE prove causal fits. Train-on-validation mutation caught1 failure, restored/rechecked. Duplicate preflight/metric guards simplified separately bf0e071, final independent review clean.
 - T016 complete:17 required tasks complete,69 required remain plus optional T080. Current slice T086 versioned domains, then T017 search/T018 enforceable workers/T019 assessment. Training CLI/external profiles remain pending; no release completion claim.
+
+- T086/C06 complete:27 domaincases/493 full tests, Ruff/format/build pass; documented YAML executed. MissingmoduleRED preceded finitegridresolver. Direct-MLSpec duplicatecandidate gap reproducedRED/fixed with sharedcoreintentchecker; existing225core+resolver tests pass. Conflictguardmutation caught1failure, restored/rechecked. Independent final review clean; no further simplification justified.18 required tasks complete,68 required remain plusoptionalT080. CurrentT017 search, thenT018workerlimits andT019assessment; no wholedeadline/fulltrainingclaim yet.

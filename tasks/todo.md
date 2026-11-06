@@ -671,7 +671,7 @@ python3 -m pytest tests/contract/automl/test_arima.py -q
 
 <a id="t086"></a>
 
-### [ ] T086: Resolve versioned default tuning domains
+### [x] T086: Resolve versioned default tuning domains
 
 **Description:** Supply per-algorithm default search ranges without expanding the configured candidate list.
 
@@ -679,9 +679,9 @@ python3 -m pytest tests/contract/automl/test_arima.py -q
 
 **Acceptance criteria:**
 
-- [ ] Every supported listed algorithm resolves omitted domains from versioned library defaults; valid per-key overrides and fixed values are preserved.
-- [ ] Unknown keys, invalid types/ranges, incompatible task/metric pairs, and unbounded search limits fail before fitting.
-- [ ] Resolved spaces/default versions appear in results, and a newly installed/unlisted algorithm never enters search.
+- [x] Every supported listed algorithm resolves omitted domains from versioned library defaults; valid per-key overrides and fixed values are preserved.
+- [x] Unknown keys, invalid types/ranges, incompatible task/metric pairs, and unbounded search limits fail before fitting.
+- [x] Resolved spaces/default versions appear in results, and a newly installed/unlisted algorithm never enters search.
 
 **Verification:**
 
@@ -689,7 +689,7 @@ python3 -m pytest tests/contract/automl/test_arima.py -q
 python3 -m pytest tests/unit/automl/test_default_spaces.py -q
 ```
 
-- [ ] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
+- [x] Command(s) pass in the selected environment; inspect actual outputs/evidence against the criteria.
 
 **Dependencies:** T016, T087
 
@@ -701,11 +701,13 @@ python3 -m pytest tests/unit/automl/test_default_spaces.py -q
 
 **Estimated scope:** Medium (3 files).
 
+**Evidence:**27 resolver cases/493 full tests, Ruff/format/build pass; valid YAML example executed. Duplicate direct-MLSpec candidate RED fixed by canonical intent validation; conflictguardmutation caught1 failure and restored/rechecked. Independent final review clean; no simplification justified. SearchDomain outputs carry exact resolved domains/version; full TrainingResult linkage remains T019.
+
 ### Checkpoint C06: After T015, T016, T086
 
-- [ ] Required tasks in this group meet their criteria; incomplete live evidence remains visible. Optional work is not counted as a release blocker.
-- [ ] Applicable focused/regression tests, build, lint, and formatting pass for implemented environments; no weakening or placeholder support.
-- [ ] Review milestone evidence and dependencies before proceeding; intermediate examples do not constitute release completion.
+- [x] Required tasks in this group meet their criteria; incomplete live evidence remains visible. Optional work is not counted as a release blocker.
+- [x] Applicable focused/regression tests, build, lint, and formatting pass for implemented environments; no weakening or placeholder support.
+- [x] Review milestone evidence and dependencies before proceeding; intermediate examples do not constitute release completion.
 
 
 ## Stage 07: T017, T018, T019

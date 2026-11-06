@@ -136,3 +136,10 @@ def test_total_domain_limit_rejects_before_cartesian_expansion():
     )
     with pytest.raises(ConfigError):
         resolve_search(config)
+
+
+def test_duplicate_algorithm_ids_reject_at_the_second_candidate_field():
+    config = spec([{"name": "naive.last"}, {"name": "naive.last"}])
+    with pytest.raises(ConfigError) as caught:
+        resolve_search(config)
+    assert caught.value.path == "ml.algorithms.1.name"

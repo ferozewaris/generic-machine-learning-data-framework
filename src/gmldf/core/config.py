@@ -306,10 +306,8 @@ TASK_METRICS = {
 }
 
 
-def _validate_ml_intent(workflow: WorkflowSpec) -> None:
-    ml = workflow.ml
-    if ml is None:
-        return
+def validate_ml_intent(ml: MLSpec) -> None:
+    """Validate task intent shared by workflow and direct ML provider entry points."""
     names = set()
     for index, algorithm in enumerate(ml.algorithms):
         if algorithm.name in names:
@@ -346,5 +344,6 @@ def validate_config(config: Mapping[str, object]) -> WorkflowSpec:
         if workflow.kind != kind and getattr(workflow, field) is not None:
             raise ConfigError(field, "not_allowed_for_kind")
     _validate_references(workflow)
-    _validate_ml_intent(workflow)
+    if workflow.ml is not None:
+        validate_ml_intent(workflow.ml)
     return workflow
