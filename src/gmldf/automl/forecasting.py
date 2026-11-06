@@ -76,6 +76,11 @@ def evaluate_naive(dataset: DatasetRef, spec: MLSpec, context: RunContext) -> Fo
         raise FrameworkError("CAPABILITY_UNSUPPORTED", path="ml.evaluation.metric")
     if spec.evaluation.greater_is_better not in {None, False}:
         raise ConfigError("ml.evaluation.greater_is_better", "mae_must_be_minimized")
+    return _evaluate_forecast(dataset, spec, fit_naive, {})
+
+
+def _evaluate_forecast(dataset, spec, fit_candidate, parameters) -> ForecastEvaluation:
+    algorithm = spec.algorithms[0]
     split = split_forecast_data(dataset, spec)
     actual = split.validation[split.target]
     if not actual.map(lambda value: not isinstance(value, int) or int(float(value)) == value).all():
@@ -99,7 +104,7 @@ def evaluate_naive(dataset: DatasetRef, spec: MLSpec, context: RunContext) -> Fo
         ).hexdigest()
     )
     started = perf_counter()
-    model = fit_naive(
+    model = fit_candidate(
         split.train, time_column=split.time_column, target=split.target, frequency=split.frequency
     )
     predictions = model.forecast(split.horizon)
@@ -119,7 +124,7 @@ def evaluate_naive(dataset: DatasetRef, spec: MLSpec, context: RunContext) -> Fo
         trial_id="trial_0",
         algorithm=algorithm.name,
         status="succeeded",
-        parameters={},
+        parameters=parameters,
         validation_score=score,
         seed=spec.tuning.seed,
         fit_count=1,
